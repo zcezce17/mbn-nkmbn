@@ -33,15 +33,16 @@
             textBox1 = new TextBox();
             textBox2 = new TextBox();
             label3 = new Label();
+            button1 = new Button();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 55F);
-            label1.Location = new Point(574, 133);
+            label1.Location = new Point(502, 100);
             label1.Name = "label1";
-            label1.Size = new Size(317, 123);
+            label1.Size = new Size(256, 99);
             label1.TabIndex = 0;
             label1.Text = "LOGIN";
             label1.Click += label1_Click;
@@ -50,49 +51,66 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 15F);
-            label2.Location = new Point(610, 405);
+            label2.Location = new Point(534, 304);
             label2.Name = "label2";
-            label2.Size = new Size(132, 35);
+            label2.Size = new Size(102, 28);
             label2.TabIndex = 0;
             label2.Text = "Password: ";
             label2.Click += label1_Click;
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(748, 413);
+            textBox1.Location = new Point(654, 310);
+            textBox1.Margin = new Padding(3, 2, 3, 2);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(125, 27);
+            textBox1.Size = new Size(110, 23);
             textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(748, 336);
+            textBox2.Location = new Point(654, 252);
+            textBox2.Margin = new Padding(3, 2, 3, 2);
             textBox2.Name = "textBox2";
-            textBox2.Size = new Size(125, 27);
+            textBox2.Size = new Size(110, 23);
             textBox2.TabIndex = 1;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 15F);
-            label3.Location = new Point(610, 328);
+            label3.Location = new Point(534, 246);
             label3.Name = "label3";
-            label3.Size = new Size(139, 35);
+            label3.Size = new Size(108, 28);
             label3.TabIndex = 0;
             label3.Text = "Username: ";
             label3.Click += label1_Click;
             // 
+            // button1
+            // 
+            button1.FlatAppearance.BorderColor = Color.Black;
+            button1.FlatAppearance.BorderSize = 2;
+            button1.FlatStyle = FlatStyle.Popup;
+            button1.Location = new Point(580, 353);
+            button1.Name = "button1";
+            button1.Size = new Size(126, 38);
+            button1.TabIndex = 2;
+            button1.Text = "LOGIN";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ClientSize = new Size(1540, 745);
+            ClientSize = new Size(1478, 637);
+            Controls.Add(button1);
             Controls.Add(textBox2);
             Controls.Add(textBox1);
             Controls.Add(label2);
             Controls.Add(label3);
             Controls.Add(label1);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
             Text = "Form1";
             ResumeLayout(false);
@@ -106,5 +124,6 @@
         private TextBox textBox1;
         private TextBox textBox2;
         private Label label3;
+        private Button button1;
     }
 }
