@@ -23,6 +23,8 @@ namespace WinFormsApp1
             InitializeComponent();
             panel4.VerticalScroll.Visible = false;
             panel4.VerticalScroll.Enabled = false;
+            button1.Visible = false;
+            button52.Visible = false;
             panel4.AutoScroll = false; // Temporarily disable to force refresh
             panel4.AutoScroll = true;  // Re-enable scrolling without scrollbar
             totalPrice = 0;
@@ -92,7 +94,7 @@ namespace WinFormsApp1
     { "Oatmilk", 50.00m },
     { "Full Cream Milk", 30.00m }
 };
-
+        public decimal basePrice = 0;
         private decimal totalPrice = 0;
         private Label totalPriceLabel = new Label();
 
@@ -133,6 +135,7 @@ namespace WinFormsApp1
                 confirmButton.Click += ConfirmButton_Click;
                 panel6.Controls.Add(confirmButton);
             }
+            confirmButton.Visible = false;
         }
 
 
@@ -186,7 +189,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -212,7 +215,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -255,7 +258,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -274,6 +277,7 @@ namespace WinFormsApp1
                 decimal price = drinkPrices[drinkName];
                 string orderString = $"{drinkName} | Price: ₱{price:N2}";
                 orderList.Add(orderString);
+                Debug.WriteLine($"Frappe String: {orderString}");
                 UpdateOrderDisplay();
             }
         }
@@ -302,18 +306,26 @@ namespace WinFormsApp1
                 .Where(btn => btn.Text == "Edit") // Assuming all edit buttons have the text "Edit"
                 .ToList()
                 .ForEach(btn => panel6.Controls.Remove(btn));
-           
-
+            Debug.WriteLine("--- UpdateOrderDisplay Called ---");
+            Debug.WriteLine($"Order List Count: {orderList.Count}");
+            Debug.WriteLine($"Order String: {orderList}");
             int yOffset = orderSummaryLabel.Bottom + 10; // Start below "Order Summary:"
             decimal subTotalPrice = 0; // Calculate subtotal before discount
-            totalPrice = 0;
-
+            decimal totalPrice = 0;
+            decimal basePrice = 0;
+            decimal finalPrice = 0;
             Dictionary<string, int> orderCounts = new Dictionary<string, int>();
 
             var updatedOrderCounts = new Dictionary<string, int>(); // Stores updated order strings
-
+         
+            foreach (string order in orderList)
+            {
+                Debug.WriteLine(order);
+            }
+          
             foreach (string orderString in orderList)
             {
+                
                 // Extract order details
                 string[] parts = orderString.Split('|');
                 int orderQuantity = 1; // Default quantity
@@ -321,21 +333,32 @@ namespace WinFormsApp1
 
                 foreach (string part in parts)
                 {
-                   
+                    Debug.WriteLine($"  Part: {part}");
                     if (part.StartsWith("Quantity="))
                     {
                         int.TryParse(part.Substring("Quantity=".Length).Trim(), out orderQuantity);
-                       
+
                     }
-                    else if (part.StartsWith("Addons=")) // Capture Addons
+
+                    if (part.StartsWith("Price="))
                     {
-                        addonsValue = part.Substring("Addons=".Length);
+                        decimal.TryParse(part.Substring("Price=".Length).Trim(), out basePrice);
                     }
+
+                    if (part.StartsWith("TotalPrice="))
+                    {
+                        decimal.TryParse(part.Substring("TotalPrice=".Length).Trim(), out totalPrice);
+                    }
+                    if (part.StartsWith("Addons="))
+                    {
+                        addonsValue = part.Substring("Addons=".Length).Trim();
+                    }
+
                 }
 
                 // ✅ Generate a unique key INCLUDING Addons (or empty if none)
-                string orderKey = string.Join("|", parts.Where(p => !p.StartsWith("Quantity="))) + (string.IsNullOrEmpty(addonsValue) ? "" : $"|Addons={addonsValue}");
-
+                string orderKey = string.Join("|", parts.Where(p => !p.StartsWith("Quantity=")));
+     
                 if (orderCounts.ContainsKey(orderKey))
                 {
                     orderCounts[orderKey] += orderQuantity; // Sum up quantity
@@ -344,6 +367,7 @@ namespace WinFormsApp1
                 {
                     orderCounts[orderKey] = orderQuantity;
                 }
+                Debug.WriteLine($"Order String: {orderString}");
             }
 
             // ✅ Now update the order strings with correct quantities
@@ -353,13 +377,13 @@ namespace WinFormsApp1
                 updatedOrderCounts[updatedOrderString] = entry.Value;
             }
 
-         
             foreach (KeyValuePair<string, int> orderEntry in orderCounts)
             {
                 string orderString = orderEntry.Key;
                 int quantity = orderEntry.Value;
-                decimal itemPrice = 0;
+                
                 List<string> addons = new List<string>();
+               
 
                 if (orderString.Contains("=")) // Handle complex orders (Form 3/Form 4)
                 {
@@ -367,11 +391,12 @@ namespace WinFormsApp1
                     try
                     {
                         string addonsString = "NoAddons"; // Default to "NoAddons"
-
+                        decimal localBasePrice = 0; // ✅ Declaration
+                        decimal localTotalPrice = 0;
                         string[] parts = orderString.Split('|');
                         foreach (string part in parts)
                         {
-                            
+
                             if (part.StartsWith("Addons="))
                             {
                                 string addonsPart = part.Substring("Addons=".Length).Trim(); // Trim whitespace
@@ -379,20 +404,29 @@ namespace WinFormsApp1
                                 {
                                     addonsString = addonsPart;
                                     addons = addonsPart.Split(',').ToList();
+                                 
                                 }
+                               
                             }
                             else if (part.StartsWith("Quantity="))
                             {
                                 if (int.TryParse(part.Substring("Quantity=".Length), out quantity))
                                 {
-                                    
+                                
                                 }
                             }
                             else if (part.StartsWith("Price="))
                             {
-                                if (decimal.TryParse(part.Substring("Price=".Length), out itemPrice))
+                                if (decimal.TryParse(part.Substring("Price=".Length), out localBasePrice))
                                 {
                                    
+                                }
+                            }
+                            else if (part.StartsWith("TotalPrice="))
+                            {
+                                if (decimal.TryParse(part.Substring("TotalPrice=".Length), out localTotalPrice))
+                                {
+
                                 }
                             }
                             else
@@ -410,22 +444,36 @@ namespace WinFormsApp1
                             string drinkName = orderData["DrinkName"].ToString();
                             string temperature = orderData["Temperature"].ToString();
                             orderData["Quantity"] = quantity;
-                            orderData["Price"] = itemPrice;
+                            orderData["Price"] = localBasePrice;
+                            orderData["TotalPrice"] = localTotalPrice;
                             string orderText = $"Drink: {drinkName} ({temperature})";
-                          
 
                             if (addons.Any())
                             {
+                                orderData["Addons"] = string.Join(",", addons);
                                 orderText += "\n" + string.Join("\n", addons);
+                                subTotalPrice = localTotalPrice * quantity;
+                                orderText += $"\nPrice: ₱{localTotalPrice:N2}"; // Display unit price if addons
+                                if (quantity > 1)
+                                {
+                                    orderText += $" x {quantity}";
+                                }
+                               
                             }
 
-                            orderText += $"\nPrice: ₱{itemPrice:N2}";
-
-                            if (quantity > 1)
+                            else
                             {
-                                orderText += $" x{quantity}";
+                                subTotalPrice = localBasePrice * quantity;
+                                orderText += $"\nPrice: ₱{localBasePrice:N2}"; // Display unit price if no addons
+                                if (quantity > 1)
+                                {
+                                    orderText += $" x {quantity}";
+                                }
+                               
                             }
-                            subTotalPrice += itemPrice * quantity;
+
+                            finalPrice += subTotalPrice;
+                            
                             // Create order label
                             Label orderLabel = new Label
                             {
@@ -435,7 +483,7 @@ namespace WinFormsApp1
                             };
                             panel6.Controls.Add(orderLabel);
                             yOffset = orderLabel.Bottom + 10;
-
+                     
                             // Create "Edit" button
                             Button editButton = new Button
                             {
@@ -455,11 +503,11 @@ namespace WinFormsApp1
 
                             yOffset = editButton.Bottom + 10;  // Update yOffset for next order
 
-                           
+
                         }
                         else
                         {
-                           
+
                             Label errorLabel = new Label
                             {
                                 AutoSize = true,
@@ -472,7 +520,7 @@ namespace WinFormsApp1
                     }
                     catch (Exception ex)
                     {
-                        
+
                         Label errorLabel = new Label
                         {
                             AutoSize = true,
@@ -490,10 +538,12 @@ namespace WinFormsApp1
                     {
                         string drinkName = parts[0].Trim();
                         string pricePart = parts[1].Trim();
+                        decimal localBasePrice = 0; 
                         int priceIndex = pricePart.IndexOf("₱");
-                        if (priceIndex != -1 && decimal.TryParse(pricePart.Substring(priceIndex + 1), out itemPrice))
+                        if (priceIndex != -1 && decimal.TryParse(pricePart.Substring(priceIndex + 1), out localBasePrice))
                         {
-                            string orderText = $"{drinkName}\nPrice: ₱{itemPrice:N2}";
+                            string orderText = $"{drinkName}\nPrice: ₱{localBasePrice:N2}";
+                            subTotalPrice = localBasePrice * quantity;
                             if (quantity > 1)
                             {
                                 orderText += $" x{quantity}";
@@ -506,11 +556,11 @@ namespace WinFormsApp1
                             };
                             panel6.Controls.Add(orderLabel);
                             yOffset = orderLabel.Bottom + 10;
-                            subTotalPrice += itemPrice * quantity;
+                            finalPrice += subTotalPrice;
                         }
                         else
                         {
-                           
+
                             Label errorLabel = new Label
                             {
                                 AutoSize = true,
@@ -523,7 +573,7 @@ namespace WinFormsApp1
                     }
                     else
                     {
-                        
+
                         Label errorLabel = new Label
                         {
                             AutoSize = true,
@@ -540,8 +590,8 @@ namespace WinFormsApp1
             if (discountApplied)
             {
                 decimal discountPercentage = GetDiscountPercentage();
-                decimal discountAmount = subTotalPrice * (discountPercentage / 100);
-                subTotalPrice -= discountAmount;
+                decimal discountAmount = finalPrice * (discountPercentage / 100);
+                finalPrice -= discountAmount;
 
                 // Display the discount applied
                 Label discountLabel = new Label();
@@ -555,14 +605,15 @@ namespace WinFormsApp1
                 yOffset = discountLabel.Bottom + 10; // Adjust the yOffset for the total price label
             }
 
-            totalPrice = subTotalPrice; // Set the final total price
-
+           
+            
             // Update Total Price Label
-            totalPriceLabel.Text = $"Total: ₱{totalPrice:N2}";
+            totalPriceLabel.Text = $"Total: ₱{finalPrice:N2}";
             totalPriceLabel.Location = new Point(10, yOffset);
             totalPriceLabel.Font = new Font(totalPriceLabel.Font, FontStyle.Bold);
             totalPriceLabel.AutoSize = true;
             panel6.Controls.Add(totalPriceLabel);
+            totalPriceLabel.Visible = orderList.Count > 0;
 
             // Move Confirm Button below total price
             confirmButton.Location = new Point(10, totalPriceLabel.Bottom + 10);
@@ -579,11 +630,13 @@ namespace WinFormsApp1
             {
                 button1.Visible = true;
                 button52.Visible = true;
+                confirmButton.Visible = true;
             }
             else
             {
                 button1.Visible = false;
                 button52.Visible = false;
+                confirmButton.Visible = false;
             }
         }
 
@@ -592,8 +645,6 @@ namespace WinFormsApp1
         {
             return currentDiscountPercentage;
         }
-
-
 
         public void DisplayOrder(string drinkName, string drinkTemperature, int quantity = 1, int extraShots = 0, int extraSyrup = 0, string sugarLevel = "100%", string selectedCream = "None", string selectedMilk = "None")
         {
@@ -693,7 +744,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -719,7 +770,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -741,7 +792,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -762,7 +813,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -784,7 +835,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName,currentTemperature,price3,1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -805,7 +856,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -826,7 +877,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -847,7 +898,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -868,7 +919,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -889,7 +940,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -910,7 +961,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -931,7 +982,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -952,7 +1003,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -973,7 +1024,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -994,7 +1045,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -1015,7 +1066,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, 1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -1036,7 +1087,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -1057,7 +1108,7 @@ namespace WinFormsApp1
             string currentTemperature = drinksWithoutHot.Contains(SelectedDrinkName) ? "Cold" : "Hot";
 
             // Pass the temperature along with the other details to Form3
-            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3,1);
+            Form3 drinkoptionspopup = new Form3(SelectedDrinkName, currentTemperature, price3, totalPrice, 1, "");
 
             if (drinkoptionspopup.ShowDialog() == DialogResult.OK)
             {
@@ -1255,16 +1306,12 @@ namespace WinFormsApp1
                 {
                     if (discountPercentage > 0 && discountPercentage <= 100)
                     {
-                        // Calculate the discount amount
-                        decimal discountAmount = totalPrice * (discountPercentage / 100);
-
-                        // Apply the discount to the total price
-                        totalPrice = totalPrice - discountAmount;
+                        
                         discountApplied = true;
                         currentDiscountPercentage = discountPercentage;
 
                         // Update the order display
-                        MessageBox.Show($"Discount of ₱{discountAmount:N2} applied.", "Discount Applied", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Discount of ₱{discountPercentage}% applied.", "Discount Applied", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         UpdateOrderDisplay();
                     }
                     else
@@ -1309,7 +1356,7 @@ namespace WinFormsApp1
                                 }
                                 catch (Exception ex)
                                 {
-                                    
+
                                 }
                             }
                             else
@@ -1362,7 +1409,7 @@ namespace WinFormsApp1
                                         }
                                         catch (Exception ex)
                                         {
-                                            
+
                                         }
                                     }
                                     else
@@ -1401,85 +1448,37 @@ namespace WinFormsApp1
 
         public void DisplayOrderString(string orderString)
         {
-            Debug.WriteLine($"Received in Form2: {orderString}"); // Debugging
-            
-            string drinkName = "";
-            string temperature = "";
-            decimal price = 0;
-            int quantity = 1; // Default to 1
-            string addons = "";
-
-            string[] parts = orderString.Split('|');
-            foreach (string part in parts)
-            {
-                if (part.StartsWith("DrinkName="))
-                    drinkName = part.Substring("DrinkName=".Length);
-                else if (part.StartsWith("Temperature="))
-                    temperature = part.Substring("Temperature=".Length);
-                else if (part.StartsWith("Price=") && decimal.TryParse(part.Substring("Price=".Length), out decimal parsedPrice))
-                    price = parsedPrice;
-                else if (part.StartsWith("Quantity=") && int.TryParse(part.Substring("Quantity=".Length), out int parsedQuantity))
-                    quantity = parsedQuantity;
-                else if (part.StartsWith("Addons="))
-                    addons = part.Substring("Addons=".Length);
-            }
-
-            Debug.WriteLine($"Final Parsed Order - Drink: {drinkName}, Temp: {temperature}, Quantity: {quantity}");
-
-            for (int i = 0; i < quantity; i++) // ✅ Loop to create multiple orders
-            {
-                if (!string.IsNullOrEmpty(addons))
-                {
-                    int extraShots = 0, extraSyrup = 0;
-                    string sugarLevel = "100%", selectedCream = "None", selectedMilk = "None";
-
-                    string[] addonParts = addons.Split(',');
-                    foreach (string addon in addonParts)
-                    {
-                        if (addon.StartsWith("Extra Shots:"))
-                            int.TryParse(Regex.Match(addon, @"\d+").Value, out extraShots);
-                        else if (addon.StartsWith("Extra Syrup:"))
-                            int.TryParse(Regex.Match(addon, @"\d+").Value, out extraSyrup);
-                        else if (addon.StartsWith("Sugar Level:"))
-                            sugarLevel = addon.Replace("Sugar Level: ", "").Trim();
-                        else if (addon.StartsWith("Cream:"))
-                            selectedCream = addon.Replace("Cream: ", "").Split('(')[0].Trim();
-                        else if (addon.StartsWith("Milk:"))
-                            selectedMilk = addon.Replace("Milk: ", "").Split('(')[0].Trim();
-                    }
-
-                    DisplayOrder(drinkName, temperature, 1, extraShots, extraSyrup, sugarLevel, selectedCream, selectedMilk); // ✅ Each order is Quantity=1
-                }
-                else
-                {
-                    DisplayOrder(drinkName, temperature, 1); // ✅ Each order is added separately
-                }
-            }
+            orderList.Add(orderString);
+          
+            UpdateOrderDisplay();
         }
 
 
         private void EditOrder(object sender, EventArgs e)
         {
+          
             Button editButton = sender as Button;
             if (editButton != null && editButton.Tag is Dictionary<string, object> orderData)
             {
                 // Retrieve the order data from the Tag property
                 string drinkName = orderData["DrinkName"].ToString();
-                string temperature = orderData["Temperature"].ToString();
+                string origTemperature = orderData["Temperature"].ToString();
                 decimal price = (decimal)orderData["Price"];  // Retrieve the price
                 int quantity = (int)orderData["Quantity"];   // Retrieve the quantity
-
+                string existingAddons = orderData.ContainsKey("Addons") ? orderData["Addons"].ToString() : "";
+                decimal totalPrice = (decimal)orderData["TotalPrice"];
+                
                 // Open Form3 and pass all the necessary data (drink name, price, temperature, and quantity)
-                Form3 editForm = new Form3(drinkName, temperature, price, quantity);  // Pass quantity here
-
+                Form3 editForm = new Form3(drinkName, origTemperature, price, totalPrice, quantity, existingAddons);  // Pass quantity here
+                editForm.IsEditing = true;  // Set the editing flag
                 if (editForm.ShowDialog() == DialogResult.OK)
                 {
                     // After editing, get the new temperature and quantity
-                    string newTemperature = editForm.SelectedTemperature;  // Get the new temperature
+                    string temperature = editForm.SelectedTemperature;  // Get the new temperature
                     int newQuantity = editForm.OrderQuantity;              // Get the new quantity
-
-                    // Call HandleEditOrder to update the order
-                    HandleEditOrder(drinkName, temperature, quantity, price, newQuantity, newTemperature);
+                    string newAddons = editForm.UpdatedAddons;             // get the updated addons
+                    decimal newDrinkPrice = editForm.currentTotalPrice;        // Call HandleEditOrder to update the order
+                    HandleEditOrder(drinkName, temperature, quantity, price, newQuantity, origTemperature, newDrinkPrice, existingAddons, newAddons);
 
                     // Update the order display
                     UpdateOrderDisplay();  // This should refresh the display with the updated order
@@ -1488,78 +1487,232 @@ namespace WinFormsApp1
         }
 
 
-        public void HandleEditOrder(string drinkName, string temperature, int cQuantity, decimal price, int newQuantity, string newTemperature, string addons="")
+        public void HandleEditOrder(string drinkName, string temperature, int cQuantity, decimal price, int newQuantity, string origTemperature, decimal newDrinkPrice, string addons = "", string newAddons = "")
         {
-           
-
+            Debug.WriteLine("--- HandleEditOrder Called ---");
+            Debug.WriteLine($"Original Drink: {drinkName}, Temp: {origTemperature}, Qty: {cQuantity}, Price: {price}");
+            Debug.WriteLine($"New Temp: {temperature}, New Qty: {newQuantity}, New Total Price: {newDrinkPrice}");
+            Debug.WriteLine($"Existing Addons: {string.Join(",", addons)}");
+            Debug.WriteLine($"Selected Addons: {string.Join(",", newAddons)}");
             // Identify change type
-            bool isTemperatureChange = (newTemperature != null && newTemperature != temperature);
-            bool isQuantityChange = (newQuantity !=cQuantity);
+            bool isTemperatureChange = (temperature != origTemperature);
+            bool isQuantityChange = (newQuantity != cQuantity);
+            bool areAddonsChanged = !(addons?.SequenceEqual(newAddons) ?? (addons == null));
+            Debug.WriteLine($"isTemperatureChange: {isTemperatureChange}");
+            Debug.WriteLine($"areAddonsChanged: {areAddonsChanged}");
+            Debug.WriteLine($"isQuantityChange: {isQuantityChange}");
 
-            // Find the original order
-            string originalOrderKey = $"DrinkName={drinkName}|Temperature={temperature}" + (string.IsNullOrEmpty(addons) ? "" : $"|Addons={addons}");
-            List<string> matchingOrders = orderList.Where(order => order.StartsWith(originalOrderKey)).ToList();
-
-            int originalTotalQuantity = 0;
-            decimal originalPrice = price; // Default to the passed price
-
-            foreach (var order in matchingOrders)
+            // Construct the key for the original order
+            string originalOrderKey = $"DrinkName={drinkName}|Temperature={origTemperature}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={cQuantity}" + (string.IsNullOrEmpty(addons) ? "" : $"|Addons={addons}");
+            Debug.WriteLine($"Searching for order with key: {originalOrderKey}");
+            List<string> matchingOriginalOrders = orderList.Where(order => order.StartsWith(originalOrderKey)).ToList();
+          
+            // Construct the key for the potential updated order (with the new temperature)
+            
+            // **Case: Only Temperature Changed and a matching order with the new temperature exists (excluding the one being edited)**
+            if ((isTemperatureChange || areAddonsChanged) && !isQuantityChange)
             {
-                string[] parts = order.Split('|');
+                Debug.WriteLine("HandleEditOrder - Entering the (isTemperatureChange || areAddonsChanged) && !isQuantityChange block.");
+                string addonsToUse = areAddonsChanged ? newAddons : addons;
+                string potentialUpdatedOrderKeyWithoutQuantity = $"DrinkName={drinkName}|Temperature={temperature}" + (string.IsNullOrEmpty(addonsToUse) ? "" : $"|Addons={addonsToUse}");
+               
+                List<string> existingNewTemperatureOrders = orderList
+        .Where(order => {
+            string[] parts = order.Split('|');
+            string orderDrinkName = null;
+            string orderTemperature = null;
+            string orderAddons = null;
 
-                int currentQuantity = cQuantity;
-                originalTotalQuantity = currentQuantity;
+            foreach (string part in parts)
+            {
+                if (part.StartsWith("DrinkName=")) orderDrinkName = part.Substring("DrinkName=".Length);
+                else if (part.StartsWith("Temperature=")) orderTemperature = part.Substring("Temperature=".Length);
+                else if (part.StartsWith("Addons=")) orderAddons = part.Substring("Addons=".Length);
+            }
 
-                // Extract the price from the existing order if available
-                string pricePart = parts.FirstOrDefault(part => part.StartsWith("Price="));
-                if (pricePart != null)
+            bool nameMatch = (orderDrinkName == drinkName);
+            bool tempMatch = (orderTemperature == temperature); // Use newTemperature here
+            bool addonsMatch = string.IsNullOrEmpty(addonsToUse) && string.IsNullOrEmpty(orderAddons) || (!string.IsNullOrEmpty(addonsToUse) && !string.IsNullOrEmpty(orderAddons) && addonsToUse == orderAddons);
+
+            return nameMatch && tempMatch && addonsMatch;
+        })
+        .ToList();
+             
+
+                if (existingNewTemperatureOrders.Any())
                 {
-                    originalPrice = decimal.Parse(pricePart.Split('=')[1]);
+                    Debug.WriteLine("HandleEditOrder - Entering the if (existingNewTemperatureOrders.Any()) block");
+                    string existingOrder = existingNewTemperatureOrders.First();
+                    string[] existingOrderParts = existingOrder.Split('|');
+                    int existingQuantity = 0;
+                    string quantityPart = existingOrderParts.FirstOrDefault(part => part.StartsWith("Quantity="));
+                    if (quantityPart != null)
+                    {
+                        existingQuantity = int.Parse(quantityPart.Split('=')[1]);
+                    }
+                    int updatedQuantity = existingQuantity + cQuantity;
+                    string updatedOrderString = $"{potentialUpdatedOrderKeyWithoutQuantity}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={updatedQuantity}" + (string.IsNullOrEmpty(addonsToUse) ? "" : $"|Addons={addonsToUse}");
+                  
+                    int removedOriginalCount = orderList.RemoveAll(order => {
+                        string[] parts = order.Split('|');
+                        string orderDrinkName = null;
+                        string orderTemperature = null;
+                        string orderAddons = null;
+
+                        foreach (string part in parts)
+                        {
+                            if (part.StartsWith("DrinkName=")) orderDrinkName = part.Substring("DrinkName=".Length);
+                            else if (part.StartsWith("Temperature=")) orderTemperature = part.Substring("Temperature=".Length);
+                            else if (part.StartsWith("Addons=")) orderAddons = part.Substring("Addons=".Length);
+                        }
+
+                        bool nameMatch = (orderDrinkName == drinkName);
+                        bool tempMatch = (orderTemperature == origTemperature);
+                        bool addonsMatch = string.IsNullOrEmpty(addons) && string.IsNullOrEmpty(orderAddons) || (!string.IsNullOrEmpty(addons) && !string.IsNullOrEmpty(orderAddons) && addons == orderAddons);
+                        bool shouldRemove = nameMatch && tempMatch && addonsMatch;
+                       
+                        return nameMatch && tempMatch && addonsMatch;
+                    });
+                    int removedExistingNewTempCount = orderList.RemoveAll(order => order == existingOrder);
+                  
+
+                    orderList.Add(updatedOrderString);
+                }
+                else
+                {
+                    Debug.WriteLine("HandleEditOrder - Entering the else block");
+
+                    string updatedOrderKey = $"DrinkName={drinkName}|Temperature={temperature}";
+                    string updatedOrderString = $"{updatedOrderKey}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={cQuantity}|Addons={addonsToUse}";
+                    int removedCount = orderList.RemoveAll(order => {
+                        string[] parts = order.Split('|');
+                        string orderDrinkName = null;
+                        string orderTemperature = null;
+                        string orderAddons = null;
+
+                        foreach (string part in parts)
+                        {
+                            if (part.StartsWith("DrinkName="))
+                            {
+                                orderDrinkName = part.Substring("DrinkName=".Length);
+                               
+                            }
+                            else if (part.StartsWith("Temperature="))
+                            {
+                                orderTemperature = part.Substring("Temperature=".Length);
+                              
+                            }
+                            else if (part.StartsWith("Addons="))
+                            {
+                                orderAddons = part.Substring("Addons=".Length);
+                              
+                            }
+                        }
+
+                        bool nameMatch = (orderDrinkName == drinkName);
+                        bool tempMatch = (orderTemperature == origTemperature);
+                        bool addonsMatch = string.IsNullOrEmpty(addons) ? string.IsNullOrEmpty(orderAddons) : (orderAddons != null && orderAddons == addons);
+
+                        bool shouldRemove = nameMatch && tempMatch && addonsMatch;
+                     
+                        return shouldRemove;
+                    });
+                    addonsToUse = newAddons;
+                    updatedOrderString = $"{updatedOrderKey}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={cQuantity}|Addons={addonsToUse}";
+                    Debug.WriteLine($"HandleEditOrder - Removed {removedCount} original orders.");
+                    orderList.Add(updatedOrderString);
+                    Debug.WriteLine($"HandleEditOrder - Added updated order: {updatedOrderString}");
                 }
 
-                orderList.Remove(order);
             }
-            string updatedOrderKey = $"DrinkName={drinkName}|Temperature={newTemperature}" + (string.IsNullOrEmpty(addons) ? "" : $"|Addons={addons}");
-            string updatedOrderString = "";
-
-            Debug.WriteLine($"Removed old order: {originalOrderKey}, Quantity Removed: {originalTotalQuantity}");
-
-            // 1️⃣ **Case: Only Temperature Changed**
-            if (isTemperatureChange && !isQuantityChange)
+            // **Case: Only Quantity Changed**
+            else if (!isTemperatureChange && isQuantityChange && !areAddonsChanged)
             {
+                string updatedOrderString = "";
+                string[] parts = originalOrderKey.Split('|');
+                foreach (string part in parts)
+                {
+                    if (part.StartsWith("Quantity="))
+                    {
+                        updatedOrderString += $"Quantity={newQuantity}|";
+                    }
+                    else
+                    {
+                        updatedOrderString += $"{part}|";
+                    }
+                }
+                updatedOrderString = updatedOrderString.TrimEnd('|');
+
+                // Find the index of the original order by matching all parts except quantity
+                int index = orderList.FindIndex(order =>
+                {
+                    string[] orderParts = order.Split('|');
+                    bool match = true;
+                    foreach (string part in parts)
+                    {
+                        if (!part.StartsWith("Quantity=") && !order.Contains(part))
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    return match;
+                });
+
+                if (index != -1)
+                {
+                    // Construct the final updated order string by replacing the quantity
+                    string originalOrder = orderList[index];
+                    string[] originalOrderParts = originalOrder.Split('|');
+                    string finalUpdatedOrderString = "";
+                    foreach (string part in originalOrderParts)
+                    {
+                        if (part.StartsWith("Quantity="))
+                        {
+                            finalUpdatedOrderString += $"Quantity={newQuantity}|";
+                        }
+                        else
+                        {
+                            finalUpdatedOrderString += $"{part}|";
+                        }
+                    }
+                    finalUpdatedOrderString = finalUpdatedOrderString.TrimEnd('|');
+                    orderList[index] = finalUpdatedOrderString;
+                  
+                }
+               
+            }
+            // **Case: Both Temperature and Quantity Changed**
+            else if (isTemperatureChange || isQuantityChange || areAddonsChanged)
+            {
+                string addonsToUse = areAddonsChanged ? newAddons : addons;
+                string updatedOrderKey = $"DrinkName={drinkName}|Temperature={temperature}" + (string.IsNullOrEmpty(addonsToUse) ? "" : $"|Addons={addonsToUse}");
+                string updatedOrderString = $"{updatedOrderKey}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={newQuantity}";
                 
-                updatedOrderString = $"{updatedOrderKey}|Price={originalPrice}|Quantity={cQuantity}";
+                orderList.RemoveAll(order => {
+                    string[] parts = order.Split('|');
+                    string orderDrinkName = null;
+                    string orderTemperature = null;
+                    string orderAddons = null;
 
-                Debug.WriteLine($"Temperature changed. Updated order: {updatedOrderString}");
-            }
-            // 2️⃣ **Case: Only Quantity Changed**
-            else if (!isTemperatureChange && isQuantityChange)
-            {
-                updatedOrderString= $"{originalOrderKey}|Price={originalPrice}|Quantity={newQuantity}";
-                Debug.WriteLine($"Quantity changed. Updated order: {updatedOrderString}");
-            }
-            // 3️⃣ **Case: Both Temperature and Quantity Changed**
-            else if (isTemperatureChange && isQuantityChange)
-            {
-                updatedOrderString = $"{updatedOrderKey}|Price={originalPrice}|Quantity={newQuantity}";
-                Debug.WriteLine($"Temperature & Quantity changed. Updated order: {updatedOrderString}");
-            }
-            orderList.RemoveAll(order => order.StartsWith(updatedOrderKey));
-            orderList.Add(updatedOrderString);
+                    foreach (string part in parts)
+                    {
+                        if (part.StartsWith("DrinkName=")) orderDrinkName = part.Substring("DrinkName=".Length);
+                        else if (part.StartsWith("Temperature=")) orderTemperature = part.Substring("Temperature=".Length);
+                        else if (part.StartsWith("Addons=")) orderAddons = part.Substring("Addons=".Length);
+                    }
 
-            // Debugging Output Before Updating Display
-            Debug.WriteLine("Order List Before Updating Display:");
-            foreach (string order in orderList)
-            {
-                Debug.WriteLine(order);
+                    return orderDrinkName == drinkName &&
+                           orderTemperature == origTemperature &&
+                           (string.IsNullOrEmpty(addons) ? string.IsNullOrEmpty(orderAddons) : addons == orderAddons);
+                });
+                orderList.Add(updatedOrderString);
+              
             }
-
             // Refresh order display
+          
             UpdateOrderDisplay();
+
         }
-
-
-
-
     }
 }

@@ -14,20 +14,30 @@ namespace WinFormsApp1
 {
     public partial class Form3 : Form
     {
+        
         public string selectedDrinkName;
         public decimal selectedDrinkPrice;
-
+        public string tempFrom2;
+        public bool IsEditing { get; set; } = false;
+        public bool addonsEditInitiated = false; // Flag to check if Form4 was opened during edit mode
         public int OrderQuantity { get; set; } = 1;
-
+        public string ExistingAddons { get; set; } = ""; // To store existing addons
+        public string UpdatedAddons { get; set; } = "";  // To store updated addons from Form4
+        public decimal newDrinkPrice;
+        public decimal currentTotalPrice { get; set; } // To store the current total price
         public List<string> drinksWithoutHot = new List<string>() { "Sea Salt Latte", "Salted Caramel", "Brown Sugar Latte", "Matcha Choco", "Strawberry Matcha", "Blueberry Matcha", "Strawberry Choco", "Strawberry Latte", "Blueberry Latte", "Mango Latte" };
 
-        public Form3(string drinkName, string currentTemperature, decimal price, int quantity)
+        public Form3(string drinkName, string currentTemperature, decimal price, decimal totalPrice, int quantity, string existingAddons)
         {
             InitializeComponent();
             selectedDrinkName = drinkName;
             selectedDrinkPrice = price;
+            newDrinkPrice = price;
             SelectedTemperature = currentTemperature;  // Use the passed temperature value
+            tempFrom2= currentTemperature;
             OrderQuantity = quantity; // Set the passed quantity
+            ExistingAddons = existingAddons;
+            currentTotalPrice = totalPrice;
             UpdateQuantityLabel();
         }
 
@@ -56,17 +66,30 @@ namespace WinFormsApp1
         private void button2_Click(object sender, EventArgs e)
         {
             SelectedTemperature = "Hot";
+            Debug.WriteLine($"Temperature set to (HOT): {SelectedTemperature}");
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             SelectedTemperature = "Cold";
+            Debug.WriteLine($"Temperature set to(COLD): {SelectedTemperature}");
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Form4 addOnsForm = new Form4(selectedDrinkName, SelectedTemperature, selectedDrinkPrice, OrderQuantity);
-            addOnsForm.ShowDialog();
+            string newTemp = SelectedTemperature; // Initialize newTemp with the current temperature
+            if (IsEditing) // Only set the flag if we are in edit mode
+            {
+                addonsEditInitiated = true; // Set the flag when Form4 is opened during edit
+                newTemp = SelectedTemperature;
+            }
+            Debug.WriteLine($"SelectedTemperature: {SelectedTemperature}, OrigTemp: {tempFrom2}");
+            Form4 addOnsForm = new Form4(selectedDrinkName, newTemp, selectedDrinkPrice, OrderQuantity, tempFrom2, ExistingAddons, IsEditing);
+            if (addOnsForm.ShowDialog() == DialogResult.OK)
+            {
+                UpdatedAddons = addOnsForm.SelectedAddons;
+                button3.Text = "Edit Addons (Modified)";
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -75,12 +98,21 @@ namespace WinFormsApp1
 
             if (mainForm != null)
             {
-                decimal totalPrice = selectedDrinkPrice * OrderQuantity;
-                string orderString = $"DrinkName={selectedDrinkName}|Temperature={SelectedTemperature}|Price={selectedDrinkPrice}|Quantity={OrderQuantity}";
+                
+                decimal newDrinkPrice = selectedDrinkPrice * OrderQuantity;
+                string orderString = $"DrinkName={selectedDrinkName}|Temperature={SelectedTemperature}|Price={selectedDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={OrderQuantity}" + (string.IsNullOrEmpty(UpdatedAddons) ? "" : $"|Addons={UpdatedAddons}");
                
-                Debug.WriteLine($"Order String (Form 3): {orderString}"); // Debugging
-
-                mainForm.DisplayOrderString(orderString);  // Send the updated order back to Form2
+                if (!IsEditing)
+                {
+                    mainForm.DisplayOrderString(orderString); // Add to order list
+                }
+                else if (IsEditing && !addonsEditInitiated)
+                { 
+                    string addonsToPass = string.IsNullOrEmpty(UpdatedAddons) ? ExistingAddons : UpdatedAddons;
+                    orderString = $"DrinkName={selectedDrinkName}|Temperature={SelectedTemperature}|Price={selectedDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={OrderQuantity}" + (string.IsNullOrEmpty(addonsToPass) ? "" : $"|Addons={addonsToPass}");
+                    Debug.WriteLine($"Form3 OK - Original Temp: {tempFrom2}, ExistingAddons: '{ExistingAddons}'");
+                    Debug.WriteLine($"Form3 OK - newDrinkPrice: {newDrinkPrice}");
+                }
             }
 
             this.DialogResult = DialogResult.OK;

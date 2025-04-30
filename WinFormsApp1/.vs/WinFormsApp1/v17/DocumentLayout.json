@@ -7,12 +7,8 @@
       "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|e:\\github repo\\mbn-nkmbn\\winformsapp1\\winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|e:\\github repo\\mbn-nkmbn\\winformsapp1\\winformsapp1\\form4.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form4.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\winformsapp1\\form4.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
@@ -21,6 +17,22 @@
     {
       "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\winformsapp1\\form2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|e:\\github repo\\mbn-nkmbn\\winformsapp1\\winformsapp1\\form2.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form2.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|e:\\github repo\\mbn-nkmbn\\winformsapp1\\winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|e:\\github repo\\mbn-nkmbn\\winformsapp1\\winformsapp1\\form3.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6AB1BF4A-645F-46E1-AB2E-A61213FBCF60}|WinFormsApp1\\WinFormsApp1.csproj|solutionrelative:winformsapp1\\form3.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,11 +42,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
+              "Title": "Form2.Designer.cs",
+              "DocumentMoniker": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form2.Designer.cs",
+              "RelativeDocumentMoniker": "WinFormsApp1\\Form2.Designer.cs",
+              "ToolTip": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form2.Designer.cs",
+              "RelativeToolTip": "WinFormsApp1\\Form2.Designer.cs",
+              "ViewState": "AgIAAP8AAAAAAAAAAAArwBEBAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-29T21:27:08.368Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Form3.Designer.cs",
+              "DocumentMoniker": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form3.Designer.cs",
+              "RelativeDocumentMoniker": "WinFormsApp1\\Form3.Designer.cs",
+              "ToolTip": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form3.Designer.cs",
+              "RelativeToolTip": "WinFormsApp1\\Form3.Designer.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAADwv2IAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-27T18:02:34.606Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Form4.cs [Design]",
               "DocumentMoniker": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form4.cs",
               "RelativeDocumentMoniker": "WinFormsApp1\\Form4.cs",
@@ -46,7 +84,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "Form3.cs [Design]",
               "DocumentMoniker": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form3.cs",
               "RelativeDocumentMoniker": "WinFormsApp1\\Form3.cs",
@@ -59,15 +97,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "Form4.cs",
+              "DocumentMoniker": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form4.cs",
+              "RelativeDocumentMoniker": "WinFormsApp1\\Form4.cs",
+              "ToolTip": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form4.cs",
+              "RelativeToolTip": "WinFormsApp1\\Form4.cs",
+              "ViewState": "AgIAACoBAAAAAAAAAAAwwEUBAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-27T15:04:57.127Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Form3.cs",
               "DocumentMoniker": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form3.cs",
               "RelativeDocumentMoniker": "WinFormsApp1\\Form3.cs",
               "ToolTip": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form3.cs",
               "RelativeToolTip": "WinFormsApp1\\Form3.cs",
-              "ViewState": "AgIAADwAAAAAAAAAAAAmwEsAAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAAHkAAAAAAAAAAAAkwGsAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-17T08:14:49.676Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-17T08:14:49.676Z"
             },
             {
               "$type": "Document",
@@ -77,21 +127,22 @@
               "RelativeDocumentMoniker": "WinFormsApp1\\Form2.cs",
               "ToolTip": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form2.cs",
               "RelativeToolTip": "WinFormsApp1\\Form2.cs",
-              "ViewState": "AgIAAPQFAAAAAAAAAADgvwoGAABMAAAAAAAAAA==",
+              "ViewState": "AgIAABkCAAAAAAAAAAAYwBwCAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-17T05:49:44.577Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "Form2.cs [Design]",
               "DocumentMoniker": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form2.cs",
               "RelativeDocumentMoniker": "WinFormsApp1\\Form2.cs",
               "ToolTip": "E:\\Github Repo\\mbn-nkmbn\\WinFormsApp1\\WinFormsApp1\\Form2.cs [Design]",
               "RelativeToolTip": "WinFormsApp1\\Form2.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-18T09:18:13.171Z"
+              "WhenOpened": "2025-03-18T09:18:13.171Z",
+              "EditorCaption": " [Design]"
             }
           ]
         }

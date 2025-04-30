@@ -44,15 +44,106 @@ namespace WinFormsApp1
         private string currentDrink;
         private string drinkTemperature;
         private decimal currentDrinkPrice;
+        private decimal newDrinkPrice;
+        private string newTemperature;
         private int orderquantity;
+        public string ExistingAddons { get; set; } = "";
+        public bool IsEditing { get; set; } = false;
+        public string SelectedAddons { get; set; } = "";
 
-        public Form4(string drinkName = null, string temperature = null, decimal price = 0, int quantity = 0)
+        public Form4(string drinkName = null, string temperature = null, decimal price = 0, int quantity = 0, string origTemp = null, string existingAddons = "", bool isEditing = false)
         {
             InitializeComponent();
             currentDrink = drinkName;
-            drinkTemperature = temperature;
+            drinkTemperature = origTemp;
+            newTemperature = temperature;
             currentDrinkPrice = price;
             orderquantity = quantity;
+            ExistingAddons = existingAddons;
+            IsEditing = isEditing;
+            if (IsEditing && !string.IsNullOrEmpty(ExistingAddons))
+            {
+                PreselectAddons();
+            }
+            newDrinkPrice = 0;
+            Debug.WriteLine($"Original Temp: {origTemp}, New Temp: {temperature}");
+        }
+
+        private void PreselectAddons()
+        {
+       
+            string[] addonsArray = ExistingAddons.Split(',');
+            foreach (string addonPart in addonsArray)
+            {
+                string trimmedAddon = addonPart.Trim();
+        
+                // Logic to find and check the corresponding UI elements
+                // You'll need to adjust this based on the exact text of your checkboxes/controls
+
+                // Example for Extra Shots:
+                if (trimmedAddon.StartsWith("Extra Shots:"))
+                {
+                    string valueStr = trimmedAddon.Substring("Extra Shots:".Length).Trim().Split(' ')[0];
+             
+                    if (int.TryParse(valueStr, out int value))
+                    {
+                 
+                        numericUpDown1.Value = value;
+                    }
+              
+                }
+                // Example for Extra Syrup:
+                else if (trimmedAddon.StartsWith("Extra Syrup:"))
+                {
+                    string valueStr = trimmedAddon.Substring("Extra Syrup:".Length).Trim().Split(' ')[0];
+                 
+                    if (int.TryParse(valueStr, out int value))
+                    {
+                     
+                        numericUpDown2.Value = value;
+                    }
+                 
+                }
+                // Example for Cream:
+                else if (trimmedAddon.StartsWith("Cream:"))
+                {
+                    string creamType = trimmedAddon.Substring("Cream:".Length).Trim().Split(' ')[0];
+                    foreach (Control control in panel2.Controls)
+                    {
+                        if (control is CheckBox checkBox && checkBox.Text.StartsWith(creamType))
+                        {
+                            checkBox.Checked = true;
+                            break;
+                        }
+                    }
+                }
+                // Example for Milk:
+                else if (trimmedAddon.StartsWith("Milk:"))
+                {
+                    string milkType = trimmedAddon.Substring("Milk:".Length).Trim().Split(' ')[0];
+                    foreach (Control control in panel3.Controls)
+                    {
+                        if (control is CheckBox checkBox && checkBox.Text.StartsWith(milkType))
+                        {
+                            checkBox.Checked = true;
+                            break;
+                        }
+                    }
+                }
+                // Example for Sugar Level:
+                else if (trimmedAddon.StartsWith("Sugar Level:"))
+                {
+                    string sugarLevel = trimmedAddon.Substring("Sugar Level:".Length).Trim();
+                    foreach (Control control in panel1.Controls)
+                    {
+                        if (control is RadioButton radioButton && radioButton.Text == sugarLevel)
+                        {
+                            radioButton.Checked = true;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         public string CurrentDrink
@@ -75,13 +166,17 @@ namespace WinFormsApp1
         private void Form4_Load(object sender, EventArgs e)
         {
             numericUpDown1.Minimum = 0;
-            numericUpDown1.Maximum = 5;
-            numericUpDown1.Value = 0;
-
+            numericUpDown1.Maximum = 10;
+            if (!IsEditing)
+            {
+                numericUpDown1.Value = 0;
+            }
             numericUpDown2.Minimum = 0;
-            numericUpDown2.Maximum = 10;
-            numericUpDown2.Value = 0;
-
+            numericUpDown2.Maximum = 20;
+            if (!IsEditing)
+            {
+                numericUpDown2.Value = 0;
+            }
             // Disable extra shots based on the current drink
             if (drinksWithoutExtraShot.Contains(currentDrink))
             {
@@ -163,16 +258,18 @@ namespace WinFormsApp1
         {
             int extraShots = (int)numericUpDown1.Value;
             int extraSyrup = (int)numericUpDown2.Value;
-
             string sugarLevel = GetSelectedSugarLevel();
             string selectedCream = GetSelectedCream();
             string selectedMilk = GetSelectedMilk();
 
             decimal addonPrice = 0; // Initialize addon price
+
             List<string> addons = new List<string>(); // List to store addon strings with prices
 
             // Calculate addon prices and create addon strings
+
             if (extraShots > 0)
+
             {
                 decimal shotPrice = extraShots * 60.00m;
                 addonPrice += shotPrice;
@@ -180,6 +277,7 @@ namespace WinFormsApp1
             }
 
             if (extraSyrup > 0)
+
             {
                 decimal syrupPrice = extraSyrup * 30.00m;
                 addonPrice += syrupPrice;
@@ -187,6 +285,7 @@ namespace WinFormsApp1
             }
 
             if (!string.IsNullOrEmpty(selectedCream) && selectedCream != "None")
+
             {
                 addonPrice += 35.00m;
                 addons.Add($"Cream: {selectedCream} (₱35)");
@@ -199,6 +298,7 @@ namespace WinFormsApp1
                 {
                     milkPrice = 30.00m;
                 }
+
                 else if (selectedMilk == "Oatmilk")
                 {
                     milkPrice = 50.00m;
@@ -212,18 +312,28 @@ namespace WinFormsApp1
                 addons.Add($"Sugar Level: {sugarLevel}"); // sugar level has no price
             }
 
-            currentDrinkPrice += addonPrice; // Add addon prices to base drink price
+            newDrinkPrice = currentDrinkPrice + addonPrice; // Add the total addon price to the drink price
 
+            SelectedAddons = string.Join(",", addons);
+            
             Form2 mainForm = Application.OpenForms.OfType<Form2>().FirstOrDefault();
-            if (mainForm != null)
+            if (mainForm != null && IsEditing)
             {
-                string orderString = $"DrinkName={currentDrink}|Temperature={drinkTemperature}|Price={currentDrinkPrice}|Quantity={orderquantity}";
+                  
+                // Directly call HandleEditOrder in Form2 to update addons
+                Debug.WriteLine($"Editing Order: {currentDrink}, New Temp: {newTemperature}, Price: {currentDrinkPrice}, Total Price: {newDrinkPrice}, Quantity: {orderquantity}, Updated Addons: {SelectedAddons}");
+                mainForm.HandleEditOrder(currentDrink, newTemperature, orderquantity, currentDrinkPrice, orderquantity, drinkTemperature, newDrinkPrice, ExistingAddons, SelectedAddons);
+            }
 
+            else if (mainForm != null && !IsEditing)
+            {
+                // Handle adding a new order as before
+                string orderString = $"DrinkName={currentDrink}|Temperature={newTemperature}|Price={currentDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={orderquantity}";
                 if (addons.Count > 0)
                 {
-                    orderString += "|Addons=" + string.Join(",", addons);
+                    orderString = $"DrinkName={currentDrink}|Temperature={newTemperature}|Price={currentDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={orderquantity}|Addons=" + string.Join(",", addons);
+                    Debug.WriteLine($"Order String: {orderString}"); // For debugging
                 }
-               
                 mainForm.DisplayOrderString(orderString);
             }
             Form3 drinkOptionsForm = Application.OpenForms.OfType<Form3>().FirstOrDefault();
@@ -231,6 +341,7 @@ namespace WinFormsApp1
             {
                 drinkOptionsForm.Close();
             }
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
