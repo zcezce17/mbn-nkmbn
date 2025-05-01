@@ -29,15 +29,31 @@ namespace WinFormsApp1
 
         public Form3(string drinkName, string currentTemperature, decimal price, decimal totalPrice, int quantity, string existingAddons)
         {
+            
             InitializeComponent();
             selectedDrinkName = drinkName;
             selectedDrinkPrice = price;
-            newDrinkPrice = price;
+            newDrinkPrice = price * quantity;
             SelectedTemperature = currentTemperature;  // Use the passed temperature value
             tempFrom2= currentTemperature;
             OrderQuantity = quantity; // Set the passed quantity
             ExistingAddons = existingAddons;
             currentTotalPrice = totalPrice;
+            if (!string.IsNullOrEmpty(ExistingAddons))
+            {
+                string[] addonsArray = ExistingAddons.Split(',');
+                foreach (string addon in addonsArray)
+                {
+                    if (addon.Contains("(₱"))
+                    {
+                        string pricePart = addon.Substring(addon.IndexOf("(₱") + 2, addon.IndexOf(")") - (addon.IndexOf("(₱") + 2));
+                        if (decimal.TryParse(pricePart, out decimal addonPrice))
+                        {
+                            newDrinkPrice += addonPrice * quantity; // Apply to total
+                        }
+                    }
+                }
+            }
             UpdateQuantityLabel();
         }
 
@@ -50,6 +66,7 @@ namespace WinFormsApp1
 
         private void Form3_Load(object sender, EventArgs e)
         {
+       
             if (drinksWithoutHot.Contains(selectedDrinkName))
             {
                 button2.Enabled = false; // Disable the "Hot" button
@@ -98,19 +115,23 @@ namespace WinFormsApp1
 
             if (mainForm != null)
             {
-                
-                decimal newDrinkPrice = selectedDrinkPrice * OrderQuantity;
-                string orderString = $"DrinkName={selectedDrinkName}|Temperature={SelectedTemperature}|Price={selectedDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={OrderQuantity}" + (string.IsNullOrEmpty(UpdatedAddons) ? "" : $"|Addons={UpdatedAddons}");
+
+                string orderString = $"DrinkName={selectedDrinkName}|Temperature={SelectedTemperature}|Price={selectedDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={OrderQuantity}" + (string.IsNullOrEmpty(ExistingAddons) ? "" : $"|Addons={ExistingAddons}");
                
                 if (!IsEditing)
                 {
                     mainForm.DisplayOrderString(orderString); // Add to order list
                 }
                 else if (IsEditing && !addonsEditInitiated)
-                { 
+                {
+                    Debug.WriteLine("--- Form3 - OK Button Clicked ---");
+                    Debug.WriteLine($"  SelectedTemperature: {SelectedTemperature}, OriginalTemperature: {tempFrom2}");
+                    Debug.WriteLine($"  ExistingAddons: {string.Join(", ", ExistingAddons)}");
+                    Debug.WriteLine($"  UpdatedAddons: {UpdatedAddons}");
+                    Debug.WriteLine($"  NewDrinkPrice before close: {newDrinkPrice}");
                     string addonsToPass = string.IsNullOrEmpty(UpdatedAddons) ? ExistingAddons : UpdatedAddons;
                     orderString = $"DrinkName={selectedDrinkName}|Temperature={SelectedTemperature}|Price={selectedDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={OrderQuantity}" + (string.IsNullOrEmpty(addonsToPass) ? "" : $"|Addons={addonsToPass}");
-                    Debug.WriteLine($"Form3 OK - Original Temp: {tempFrom2}, ExistingAddons: '{ExistingAddons}'");
+                    Debug.WriteLine($"Form3 OK - Original Temp: {tempFrom2}, ExistingAddons: '{ExistingAddons}', Updated Addons: {addonsToPass}");
                     Debug.WriteLine($"Form3 OK - newDrinkPrice: {newDrinkPrice}");
                 }
             }

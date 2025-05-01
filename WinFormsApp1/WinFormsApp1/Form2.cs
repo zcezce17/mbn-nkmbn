@@ -277,7 +277,7 @@ namespace WinFormsApp1
                 decimal price = drinkPrices[drinkName];
                 string orderString = $"{drinkName} | Price: ₱{price:N2}";
                 orderList.Add(orderString);
-                Debug.WriteLine($"Frappe String: {orderString}");
+                
                 UpdateOrderDisplay();
             }
         }
@@ -306,9 +306,14 @@ namespace WinFormsApp1
                 .Where(btn => btn.Text == "Edit") // Assuming all edit buttons have the text "Edit"
                 .ToList()
                 .ForEach(btn => panel6.Controls.Remove(btn));
-            Debug.WriteLine("--- UpdateOrderDisplay Called ---");
-            Debug.WriteLine($"Order List Count: {orderList.Count}");
-            Debug.WriteLine($"Order String: {orderList}");
+
+            panel6.Controls.OfType<Button>()
+    .Where(btn => btn.Text == "Remove" || btn.Text == "Edit")
+    .ToList()
+    .ForEach(btn => panel6.Controls.Remove(btn));
+
+            Debug.WriteLine($"Order in list: '{orderList}'");
+
             int yOffset = orderSummaryLabel.Bottom + 10; // Start below "Order Summary:"
             decimal subTotalPrice = 0; // Calculate subtotal before discount
             decimal totalPrice = 0;
@@ -318,10 +323,7 @@ namespace WinFormsApp1
 
             var updatedOrderCounts = new Dictionary<string, int>(); // Stores updated order strings
          
-            foreach (string order in orderList)
-            {
-                Debug.WriteLine(order);
-            }
+            
           
             foreach (string orderString in orderList)
             {
@@ -333,7 +335,7 @@ namespace WinFormsApp1
 
                 foreach (string part in parts)
                 {
-                    Debug.WriteLine($"  Part: {part}");
+                    
                     if (part.StartsWith("Quantity="))
                     {
                         int.TryParse(part.Substring("Quantity=".Length).Trim(), out orderQuantity);
@@ -367,7 +369,7 @@ namespace WinFormsApp1
                 {
                     orderCounts[orderKey] = orderQuantity;
                 }
-                Debug.WriteLine($"Order String: {orderString}");
+               
             }
 
             // ✅ Now update the order strings with correct quantities
@@ -483,7 +485,18 @@ namespace WinFormsApp1
                             };
                             panel6.Controls.Add(orderLabel);
                             yOffset = orderLabel.Bottom + 10;
-                     
+
+                            Button removeButton = new Button
+                            {
+                                Text = "Remove",
+                                Location = new Point(panel6.Width - 160, yOffset + (orderLabel.Height / 2) - 12),
+                                Size = new Size(70, 25),
+                                Tag = orderString // You can tag the order string itself here
+                            };
+                            removeButton.Click += RemoveButton_Click;
+                            panel6.Controls.Add(removeButton);
+
+
                             // Create "Edit" button
                             Button editButton = new Button
                             {
@@ -536,6 +549,7 @@ namespace WinFormsApp1
                     string[] parts = orderString.Split('|');
                     if (parts.Length >= 2)
                     {
+                        Debug.WriteLine($"Order: {orderString}, orderlist: {orderList}");
                         string drinkName = parts[0].Trim();
                         string pricePart = parts[1].Trim();
                         decimal localBasePrice = 0; 
@@ -556,7 +570,19 @@ namespace WinFormsApp1
                             };
                             panel6.Controls.Add(orderLabel);
                             yOffset = orderLabel.Bottom + 10;
+
+                            Button removeButton = new Button
+                            {
+                                Text = "Remove",
+                                Location = new Point(panel6.Width - 80, yOffset + (orderLabel.Height / 2) - 12),
+                                Size = new Size(70, 25),
+                                Tag = orderString // You can tag the order string itself here
+                            };
+                            removeButton.Click += RemoveButton_Click;
+                            panel6.Controls.Add(removeButton);
+                            yOffset = removeButton.Bottom + 10;
                             finalPrice += subTotalPrice;
+
                         }
                         else
                         {
@@ -585,9 +611,9 @@ namespace WinFormsApp1
                     }
                 }
             }
-
-            // Apply discount if it has been applied
-            if (discountApplied)
+     
+                // Apply discount if it has been applied
+                if (discountApplied)
             {
                 decimal discountPercentage = GetDiscountPercentage();
                 decimal discountAmount = finalPrice * (discountPercentage / 100);
@@ -605,8 +631,6 @@ namespace WinFormsApp1
                 yOffset = discountLabel.Bottom + 10; // Adjust the yOffset for the total price label
             }
 
-           
-            
             // Update Total Price Label
             totalPriceLabel.Text = $"Total: ₱{finalPrice:N2}";
             totalPriceLabel.Location = new Point(10, yOffset);
@@ -640,6 +664,68 @@ namespace WinFormsApp1
             }
         }
 
+        private void RemoveButton_Click(object sender, EventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            string orderToRemove = clickedButton.Tag as string;
+
+            if (!string.IsNullOrEmpty(orderToRemove))
+            {
+                Debug.WriteLine($"Attempting to remove (parsed): '{orderToRemove}'");
+
+                if (orderToRemove.Contains("=")) // Handle complex orders
+                {
+                    string rDrinkName = "", rTemperature = "", rAddons = "";
+                    string[] rParts = orderToRemove.Split('|');
+
+                    foreach (var part in rParts)
+                    {
+                        if (part.StartsWith("DrinkName=")) rDrinkName = part.Substring("DrinkName=".Length);
+                        else if (part.StartsWith("Temperature=")) rTemperature = part.Substring("Temperature=".Length);
+                        else if (part.StartsWith("Addons=")) rAddons = part.Substring("Addons=".Length);
+                    }
+
+                    int removedCount = orderList.RemoveAll(order =>
+                    {
+                        string oDrink = "", oTemp = "", oAddons = "";
+                        string[] oParts = order.Split('|');
+
+                        foreach (var part in oParts)
+                        {
+                            if (part.StartsWith("DrinkName=")) oDrink = part.Substring("DrinkName=".Length);
+                            else if (part.StartsWith("Temperature=")) oTemp = part.Substring("Temperature=".Length);
+                            else if (part.StartsWith("Addons=")) oAddons = part.Substring("Addons=".Length);
+                        }
+
+                        bool nameMatch = oDrink == rDrinkName;
+                        bool tempMatch = oTemp == rTemperature;
+                        bool addonsMatch = string.IsNullOrEmpty(rAddons) && string.IsNullOrEmpty(oAddons) || (rAddons == oAddons);
+                        return nameMatch && tempMatch && addonsMatch;
+                    });
+                    Debug.WriteLine($"Removed {removedCount} complex orders.");
+                    UpdateOrderDisplay();
+                }
+                else // Handle simple orders (assuming format "DrinkName|₱Price")
+                {
+                    string[] rParts = orderToRemove.Split('|');
+                    if (rParts.Length >= 1)
+                    {
+                        string simpleDrinkToRemove = rParts[0].Trim();
+                        int removedCount = orderList.RemoveAll(order =>
+                        {
+                            string[] oParts = order.Split('|');
+                            if (oParts.Length >= 1)
+                            {
+                                return oParts[0].Trim() == simpleDrinkToRemove;
+                            }
+                            return false;
+                        });
+                        Debug.WriteLine($"Removed {removedCount} simple orders.");
+                        UpdateOrderDisplay();
+                    }
+                }
+            }
+        }
 
         private decimal GetDiscountPercentage()
         {
@@ -1311,7 +1397,7 @@ namespace WinFormsApp1
                         currentDiscountPercentage = discountPercentage;
 
                         // Update the order display
-                        MessageBox.Show($"Discount of ₱{discountPercentage}% applied.", "Discount Applied", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"Discount of {discountPercentage}% applied.", "Discount Applied", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         UpdateOrderDisplay();
                     }
                     else
@@ -1456,7 +1542,7 @@ namespace WinFormsApp1
 
         private void EditOrder(object sender, EventArgs e)
         {
-          
+          Debug.WriteLine("EditOrder method called.");
             Button editButton = sender as Button;
             if (editButton != null && editButton.Tag is Dictionary<string, object> orderData)
             {
@@ -1476,7 +1562,7 @@ namespace WinFormsApp1
                     // After editing, get the new temperature and quantity
                     string temperature = editForm.SelectedTemperature;  // Get the new temperature
                     int newQuantity = editForm.OrderQuantity;              // Get the new quantity
-                    string newAddons = editForm.UpdatedAddons;             // get the updated addons
+                    string newAddons = editForm.ExistingAddons;             // get the updated addons
                     decimal newDrinkPrice = editForm.currentTotalPrice;        // Call HandleEditOrder to update the order
                     HandleEditOrder(drinkName, temperature, quantity, price, newQuantity, origTemperature, newDrinkPrice, existingAddons, newAddons);
 
@@ -1489,35 +1575,30 @@ namespace WinFormsApp1
 
         public void HandleEditOrder(string drinkName, string temperature, int cQuantity, decimal price, int newQuantity, string origTemperature, decimal newDrinkPrice, string addons = "", string newAddons = "")
         {
-            Debug.WriteLine("--- HandleEditOrder Called ---");
-            Debug.WriteLine($"Original Drink: {drinkName}, Temp: {origTemperature}, Qty: {cQuantity}, Price: {price}");
-            Debug.WriteLine($"New Temp: {temperature}, New Qty: {newQuantity}, New Total Price: {newDrinkPrice}");
-            Debug.WriteLine($"Existing Addons: {string.Join(",", addons)}");
-            Debug.WriteLine($"Selected Addons: {string.Join(",", newAddons)}");
+            
             // Identify change type
             bool isTemperatureChange = (temperature != origTemperature);
             bool isQuantityChange = (newQuantity != cQuantity);
             bool areAddonsChanged = !(addons?.SequenceEqual(newAddons) ?? (addons == null));
-            Debug.WriteLine($"isTemperatureChange: {isTemperatureChange}");
-            Debug.WriteLine($"areAddonsChanged: {areAddonsChanged}");
-            Debug.WriteLine($"isQuantityChange: {isQuantityChange}");
+           
+            decimal addonPriceRemoved = 0;
 
             // Construct the key for the original order
             string originalOrderKey = $"DrinkName={drinkName}|Temperature={origTemperature}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={cQuantity}" + (string.IsNullOrEmpty(addons) ? "" : $"|Addons={addons}");
-            Debug.WriteLine($"Searching for order with key: {originalOrderKey}");
-            List<string> matchingOriginalOrders = orderList.Where(order => order.StartsWith(originalOrderKey)).ToList();
           
-            // Construct the key for the potential updated order (with the new temperature)
-            
+            List<string> matchingOriginalOrders = orderList.Where(order => order.StartsWith(originalOrderKey)).ToList();
+            List<string> incompatibleHotAddons = new List<string>() { "Cream: Salted Cream", "Cream: Cream" }; // Define incompatible addons here or as a class-level constant
+                                                                                                                // Construct the key for the potential updated order (with the new temperature)
+
             // **Case: Only Temperature Changed and a matching order with the new temperature exists (excluding the one being edited)**
             if ((isTemperatureChange || areAddonsChanged) && !isQuantityChange)
             {
-                Debug.WriteLine("HandleEditOrder - Entering the (isTemperatureChange || areAddonsChanged) && !isQuantityChange block.");
+               
                 string addonsToUse = areAddonsChanged ? newAddons : addons;
                 string potentialUpdatedOrderKeyWithoutQuantity = $"DrinkName={drinkName}|Temperature={temperature}" + (string.IsNullOrEmpty(addonsToUse) ? "" : $"|Addons={addonsToUse}");
                
                 List<string> existingNewTemperatureOrders = orderList
-        .Where(order => {
+                 .Where(order => {
             string[] parts = order.Split('|');
             string orderDrinkName = null;
             string orderTemperature = null;
@@ -1535,10 +1616,33 @@ namespace WinFormsApp1
             bool addonsMatch = string.IsNullOrEmpty(addonsToUse) && string.IsNullOrEmpty(orderAddons) || (!string.IsNullOrEmpty(addonsToUse) && !string.IsNullOrEmpty(orderAddons) && addonsToUse == orderAddons);
 
             return nameMatch && tempMatch && addonsMatch;
-        })
-        .ToList();
-             
+                })
+                .ToList();
+                if (areAddonsChanged)
+                {
+                    addonsToUse = newAddons;
+                }
+                else
+                {
+                    addonsToUse = addons; // Keep existing addons if only temperature changed
+                }
+                if ( isTemperatureChange && temperature == "Hot")
+                {
+                    if (!string.IsNullOrEmpty(addonsToUse))
+                    {
+                        List<string> compatibleAddons = addonsToUse.Split(',')
+                        .Where(addon => !incompatibleHotAddons.Contains(addon.Split('(')[0].Trim()))
+                        .ToList();
 
+                        addonsToUse = string.Join(",", compatibleAddons);
+                        if (addons != addonsToUse) // If any addons were removed, consider it an addon change
+                        {
+                            areAddonsChanged = true;
+                            
+                        }
+                    }
+                }
+               
                 if (existingNewTemperatureOrders.Any())
                 {
                     Debug.WriteLine("HandleEditOrder - Entering the if (existingNewTemperatureOrders.Any()) block");
@@ -1580,7 +1684,7 @@ namespace WinFormsApp1
                 }
                 else
                 {
-                    Debug.WriteLine("HandleEditOrder - Entering the else block");
+                   
 
                     string updatedOrderKey = $"DrinkName={drinkName}|Temperature={temperature}";
                     string updatedOrderString = $"{updatedOrderKey}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={cQuantity}|Addons={addonsToUse}";
@@ -1617,9 +1721,9 @@ namespace WinFormsApp1
                      
                         return shouldRemove;
                     });
-                    addonsToUse = newAddons;
+                    
                     updatedOrderString = $"{updatedOrderKey}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={cQuantity}|Addons={addonsToUse}";
-                    Debug.WriteLine($"HandleEditOrder - Removed {removedCount} original orders.");
+                    
                     orderList.Add(updatedOrderString);
                     Debug.WriteLine($"HandleEditOrder - Added updated order: {updatedOrderString}");
                 }

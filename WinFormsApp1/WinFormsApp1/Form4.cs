@@ -53,6 +53,7 @@ namespace WinFormsApp1
 
         public Form4(string drinkName = null, string temperature = null, decimal price = 0, int quantity = 0, string origTemp = null, string existingAddons = "", bool isEditing = false)
         {
+            Debug.WriteLine($"--- Form4 Called ---");
             InitializeComponent();
             currentDrink = drinkName;
             drinkTemperature = origTemp;
@@ -197,7 +198,7 @@ namespace WinFormsApp1
                 }
             }
 
-            if (drinkTemperature == "Hot")
+            if (newTemperature == "Hot")
             {
                 DisableCreamOptions();
             }
@@ -319,9 +320,9 @@ namespace WinFormsApp1
             Form2 mainForm = Application.OpenForms.OfType<Form2>().FirstOrDefault();
             if (mainForm != null && IsEditing)
             {
-                  
                 // Directly call HandleEditOrder in Form2 to update addons
                 Debug.WriteLine($"Editing Order: {currentDrink}, New Temp: {newTemperature}, Price: {currentDrinkPrice}, Total Price: {newDrinkPrice}, Quantity: {orderquantity}, Updated Addons: {SelectedAddons}");
+                Debug.WriteLine($"Passed Addons: {SelectedAddons}, existing addons: {ExistingAddons}");
                 mainForm.HandleEditOrder(currentDrink, newTemperature, orderquantity, currentDrinkPrice, orderquantity, drinkTemperature, newDrinkPrice, ExistingAddons, SelectedAddons);
             }
 
