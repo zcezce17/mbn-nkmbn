@@ -18,6 +18,8 @@ namespace WinFormsApp1
         private Label orderSummaryLabel;
         private List<string> orderList = new List<string>();
         private Button confirmButton;
+        private Dictionary<string, int> updatedOrderCounts = new Dictionary<string, int>(); // Declare it here
+        private Form2 form2instance;
         public Form2()
         {
             InitializeComponent();
@@ -28,6 +30,7 @@ namespace WinFormsApp1
             panel4.AutoScroll = false; // Temporarily disable to force refresh
             panel4.AutoScroll = true;  // Re-enable scrolling without scrollbar
             totalPrice = 0;
+            form2instance = this;
 
             InitializeOrderSummary();
 
@@ -312,7 +315,7 @@ namespace WinFormsApp1
     .ToList()
     .ForEach(btn => panel6.Controls.Remove(btn));
 
-            Debug.WriteLine($"Order in list: '{orderList}'");
+           
 
             int yOffset = orderSummaryLabel.Bottom + 10; // Start below "Order Summary:"
             decimal subTotalPrice = 0; // Calculate subtotal before discount
@@ -321,7 +324,7 @@ namespace WinFormsApp1
             decimal finalPrice = 0;
             Dictionary<string, int> orderCounts = new Dictionary<string, int>();
 
-            var updatedOrderCounts = new Dictionary<string, int>(); // Stores updated order strings
+        
          
             
           
@@ -335,7 +338,7 @@ namespace WinFormsApp1
 
                 foreach (string part in parts)
                 {
-                    
+                    Debug.WriteLine($"Part: {part}");
                     if (part.StartsWith("Quantity="))
                     {
                         int.TryParse(part.Substring("Quantity=".Length).Trim(), out orderQuantity);
@@ -377,16 +380,19 @@ namespace WinFormsApp1
             {
                 string updatedOrderString = $"{entry.Key}|Quantity={entry.Value}"; // Update quantity in string
                 updatedOrderCounts[updatedOrderString] = entry.Value;
+                Debug.WriteLine($"Updated order counts: {updatedOrderCounts}");
+                Debug.WriteLine($"updated order string: {updatedOrderString}");
+                
             }
-
+            
             foreach (KeyValuePair<string, int> orderEntry in orderCounts)
             {
                 string orderString = orderEntry.Key;
                 int quantity = orderEntry.Value;
                 
                 List<string> addons = new List<string>();
-               
 
+                
                 if (orderString.Contains("=")) // Handle complex orders (Form 3/Form 4)
                 {
                     Dictionary<string, object> orderData = new Dictionary<string, object>();
@@ -414,7 +420,7 @@ namespace WinFormsApp1
                             {
                                 if (int.TryParse(part.Substring("Quantity=".Length), out quantity))
                                 {
-                                
+                                    
                                 }
                             }
                             else if (part.StartsWith("Price="))
@@ -443,6 +449,7 @@ namespace WinFormsApp1
 
                         if (orderData.ContainsKey("DrinkName"))
                         {
+                            Debug.WriteLine($"order data is :{orderData}");
                             string drinkName = orderData["DrinkName"].ToString();
                             string temperature = orderData["Temperature"].ToString();
                             orderData["Quantity"] = quantity;
@@ -549,7 +556,7 @@ namespace WinFormsApp1
                     string[] parts = orderString.Split('|');
                     if (parts.Length >= 2)
                     {
-                        Debug.WriteLine($"Order: {orderString}, orderlist: {orderList}");
+                       
                         string drinkName = parts[0].Trim();
                         string pricePart = parts[1].Trim();
                         decimal localBasePrice = 0; 
@@ -671,7 +678,7 @@ namespace WinFormsApp1
 
             if (!string.IsNullOrEmpty(orderToRemove))
             {
-                Debug.WriteLine($"Attempting to remove (parsed): '{orderToRemove}'");
+               
 
                 if (orderToRemove.Contains("=")) // Handle complex orders
                 {
@@ -702,7 +709,7 @@ namespace WinFormsApp1
                         bool addonsMatch = string.IsNullOrEmpty(rAddons) && string.IsNullOrEmpty(oAddons) || (rAddons == oAddons);
                         return nameMatch && tempMatch && addonsMatch;
                     });
-                    Debug.WriteLine($"Removed {removedCount} complex orders.");
+                  
                     UpdateOrderDisplay();
                 }
                 else // Handle simple orders (assuming format "DrinkName|₱Price")
@@ -720,7 +727,7 @@ namespace WinFormsApp1
                             }
                             return false;
                         });
-                        Debug.WriteLine($"Removed {removedCount} simple orders.");
+                       
                         UpdateOrderDisplay();
                     }
                 }
@@ -799,24 +806,108 @@ namespace WinFormsApp1
             UpdateOrderDisplay();
         }
 
+        
+         private void ConfirmButton_Click(object sender, EventArgs e)
+         {
+             if (orderList.Count > 0)
+             {
+                 decimal totalPrice = 0;
 
-        private void ConfirmButton_Click(object sender, EventArgs e)
-        {
-            if (orderList.Count > 0)
-            {
-                MessageBox.Show("Order has been placed successfully!", "Order Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                orderList.Clear();
-                // Reset the discount variables
-                discountApplied = false;
-                currentDiscountPercentage = 0;
-                UpdateOrderDisplay();
-            }
-            else
-            {
-                MessageBox.Show("No orders to confirm!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+                 foreach (string originalOrderString in orderList)
+                 {
+                     Debug.WriteLine($"Processing original order: {originalOrderString}");
+                     if (originalOrderString.Contains("=")) // Handle complex orders
+                     {
+                         string orderKeyWithoutQuantity = string.Join("|", originalOrderString.Split('|').Where(p => !p.StartsWith("Quantity=")));
+                         bool foundMatch = false;
 
-        }
+                         foreach (var keyValuePair in updatedOrderCounts)
+                         {
+                             if (keyValuePair.Key.StartsWith(orderKeyWithoutQuantity + "|Quantity="))
+                             {
+                                 string updatedOrderStringWithQuantity = keyValuePair.Key;
+                                 int quantity = keyValuePair.Value;
+                                 decimal itemPrice = 0;
+
+                                 string[] parts = updatedOrderStringWithQuantity.Split('|');
+                                 foreach (string part in parts)
+                                 {
+                                     if (part.StartsWith("TotalPrice="))
+                                     {
+                                         decimal.TryParse(part.Substring("TotalPrice=".Length), out itemPrice);
+                                         Debug.WriteLine($"TotalPrice is: {itemPrice}");
+                                         break;
+                                     }
+                                     if (part.StartsWith("Quantity="))
+                                     {
+                                         int.TryParse(part.Substring("Quantity=".Length), out quantity);
+                                         Debug.WriteLine($"Quantity is: {quantity}");
+                                     }
+
+                                 }
+                                 totalPrice += itemPrice * quantity;
+                                 foundMatch = true;
+                                 break;
+                             }
+                         }
+
+                     }
+                     else // Handle simple orders
+                     {
+                         string[] parts = originalOrderString.Split('|');
+                         if (parts.Length >= 2)
+                         {
+                             string pricePart = parts[1].Trim(); // Trim any leading/trailing whitespace
+                             int priceIndex = pricePart.IndexOf("₱");
+                             if (priceIndex != -1 && decimal.TryParse(pricePart.Substring(priceIndex + 1), out decimal itemPrice))
+                             {
+
+                                 totalPrice += itemPrice;
+                             }
+                             else
+                             {
+
+                             }
+
+                         }
+                     }
+                 }
+                 decimal discountAmount = totalPrice * (currentDiscountPercentage / 100);
+                 // Create an instance of Form7, passing the calculated totalPrice
+                 Debug.WriteLine($"total price being passed: {totalPrice}");
+                 Form7 confirmationDetailsForm = new Form7(totalPrice, discountAmount, orderList, form2instance);
+
+                 // Optionally, hide the current form
+                 this.Hide();
+
+                 // Show Form7
+                 DialogResult result =  confirmationDetailsForm.ShowDialog();
+
+                 if (result == DialogResult.OK) // Assuming you set DialogResult.OK in Form7 when confirming
+                 {
+                     // Order was confirmed, proceed with resetting discount and clearing order
+                     discountApplied = false;
+                     currentDiscountPercentage = 0;
+                     orderList.Clear(); // Clear the order list upon successful confirmation
+                     UpdateOrderDisplay();
+                 }
+                 else
+                 {
+                     // Order was canceled, do nothing to the discount or order list
+                     // The existing state of Form2 should be preserved
+                     UpdateOrderDisplay(); // Still update the display to reflect the current order
+                 }
+
+                 // When Form7 is closed, you might want to re-show the current form and clear the order
+                 this.Show();  
+                 confirmationDetailsForm.Dispose();
+             }
+             else
+             {
+                 MessageBox.Show("No orders to confirm!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+             }
+         }
+        
 
         private void button11_Click(object sender, EventArgs e)
         {
@@ -1542,7 +1633,7 @@ namespace WinFormsApp1
 
         private void EditOrder(object sender, EventArgs e)
         {
-          Debug.WriteLine("EditOrder method called.");
+         
             Button editButton = sender as Button;
             if (editButton != null && editButton.Tag is Dictionary<string, object> orderData)
             {
@@ -1645,7 +1736,7 @@ namespace WinFormsApp1
                
                 if (existingNewTemperatureOrders.Any())
                 {
-                    Debug.WriteLine("HandleEditOrder - Entering the if (existingNewTemperatureOrders.Any()) block");
+                   
                     string existingOrder = existingNewTemperatureOrders.First();
                     string[] existingOrderParts = existingOrder.Split('|');
                     int existingQuantity = 0;
@@ -1725,7 +1816,7 @@ namespace WinFormsApp1
                     updatedOrderString = $"{updatedOrderKey}|Price={price}|TotalPrice={newDrinkPrice}|Quantity={cQuantity}|Addons={addonsToUse}";
                     
                     orderList.Add(updatedOrderString);
-                    Debug.WriteLine($"HandleEditOrder - Added updated order: {updatedOrderString}");
+                   
                 }
 
             }

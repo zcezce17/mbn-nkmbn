@@ -89,7 +89,7 @@ namespace WinFormsApp1
         private void button1_Click(object sender, EventArgs e)
         {
             SelectedTemperature = "Cold";
-            Debug.WriteLine($"Temperature set to(COLD): {SelectedTemperature}");
+            
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -100,7 +100,7 @@ namespace WinFormsApp1
                 addonsEditInitiated = true; // Set the flag when Form4 is opened during edit
                 newTemp = SelectedTemperature;
             }
-            Debug.WriteLine($"SelectedTemperature: {SelectedTemperature}, OrigTemp: {tempFrom2}");
+           
             Form4 addOnsForm = new Form4(selectedDrinkName, newTemp, selectedDrinkPrice, OrderQuantity, tempFrom2, ExistingAddons, IsEditing);
             if (addOnsForm.ShowDialog() == DialogResult.OK)
             {
@@ -120,19 +120,15 @@ namespace WinFormsApp1
                
                 if (!IsEditing)
                 {
+                    Debug.WriteLine($"string passed back from form3: {orderString}");
                     mainForm.DisplayOrderString(orderString); // Add to order list
                 }
                 else if (IsEditing && !addonsEditInitiated)
                 {
-                    Debug.WriteLine("--- Form3 - OK Button Clicked ---");
-                    Debug.WriteLine($"  SelectedTemperature: {SelectedTemperature}, OriginalTemperature: {tempFrom2}");
-                    Debug.WriteLine($"  ExistingAddons: {string.Join(", ", ExistingAddons)}");
-                    Debug.WriteLine($"  UpdatedAddons: {UpdatedAddons}");
-                    Debug.WriteLine($"  NewDrinkPrice before close: {newDrinkPrice}");
+                   
                     string addonsToPass = string.IsNullOrEmpty(UpdatedAddons) ? ExistingAddons : UpdatedAddons;
                     orderString = $"DrinkName={selectedDrinkName}|Temperature={SelectedTemperature}|Price={selectedDrinkPrice}|TotalPrice={newDrinkPrice}|Quantity={OrderQuantity}" + (string.IsNullOrEmpty(addonsToPass) ? "" : $"|Addons={addonsToPass}");
-                    Debug.WriteLine($"Form3 OK - Original Temp: {tempFrom2}, ExistingAddons: '{ExistingAddons}', Updated Addons: {addonsToPass}");
-                    Debug.WriteLine($"Form3 OK - newDrinkPrice: {newDrinkPrice}");
+                   
                 }
             }
 
