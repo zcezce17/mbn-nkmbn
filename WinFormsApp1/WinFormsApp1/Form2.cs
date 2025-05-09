@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Drawing2D;
 
 namespace WinFormsApp1
 {
@@ -23,17 +24,35 @@ namespace WinFormsApp1
         public Form2()
         {
             InitializeComponent();
-            panel4.VerticalScroll.Visible = false;
-            panel4.VerticalScroll.Enabled = false;
+            
             button1.Visible = false;
             button52.Visible = false;
-            panel4.AutoScroll = false; // Temporarily disable to force refresh
-            panel4.AutoScroll = true;  // Re-enable scrolling without scrollbar
+           
             totalPrice = 0;
             form2instance = this;
 
             InitializeOrderSummary();
 
+        }
+
+        private GraphicsPath GetRoundedRectPath(Rectangle rect, int radius)
+        {
+            GraphicsPath path = new GraphicsPath();
+            path.StartFigure();
+            path.AddArc(rect.X, rect.Y, radius, radius, 180, 90);
+            path.AddArc(rect.Right - radius, rect.Y, radius, radius, 270, 90);
+            path.AddArc(rect.Right - radius, rect.Bottom - radius, radius, radius, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - radius, radius, radius, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        private void ApplyRoundedCorners(Control control, int radius)
+        {
+            using (GraphicsPath path = GetRoundedRectPath(control.ClientRectangle, radius))
+            {
+                control.Region = new Region(path);
+            }
         }
 
         private bool discountApplied = false;
@@ -157,7 +176,8 @@ namespace WinFormsApp1
 
         private void Form2_Load(object sender, EventArgs e)
         {
-
+            int radius = 12;
+            ApplyRoundedCorners(button52, radius);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -278,7 +298,7 @@ namespace WinFormsApp1
             if (drinkPrices.ContainsKey(drinkName))
             {
                 decimal price = drinkPrices[drinkName];
-                string orderString = $"{drinkName} | Price: ₱{price:N2}";
+                string orderString = $"{drinkName}|Price: ₱{price:N2}|Quantity=1";
                 orderList.Add(orderString);
                 
                 UpdateOrderDisplay();
@@ -299,6 +319,12 @@ namespace WinFormsApp1
 
         private void UpdateOrderDisplay()
         {
+            Debug.WriteLine("--- START UpdateOrderDisplay ---");
+            for (int i = 0; i < orderList.Count; i++)
+            {
+                Debug.WriteLine($"[Villasis Time Check: {DateTime.Now.ToString("hh:mm:ss tt, MMMM dd, yyyy")} PST] orderList[{i}]: {orderList[i]}");
+            }
+            Debug.WriteLine("--- END orderList Contents ---");
             panel6.Controls.OfType<Label>()
        .Where(lbl => lbl != orderSummaryLabel && lbl != totalPriceLabel)
        .ToList()
@@ -324,10 +350,10 @@ namespace WinFormsApp1
             decimal finalPrice = 0;
             Dictionary<string, int> orderCounts = new Dictionary<string, int>();
 
-        
-         
-            
+
+
           
+
             foreach (string orderString in orderList)
             {
                 
@@ -380,7 +406,7 @@ namespace WinFormsApp1
             {
                 string updatedOrderString = $"{entry.Key}|Quantity={entry.Value}"; // Update quantity in string
                 updatedOrderCounts[updatedOrderString] = entry.Value;
-                Debug.WriteLine($"Updated order counts: {updatedOrderCounts}");
+               
                 Debug.WriteLine($"updated order string: {updatedOrderString}");
                 
             }
@@ -392,8 +418,8 @@ namespace WinFormsApp1
                 
                 List<string> addons = new List<string>();
 
-                
-                if (orderString.Contains("=")) // Handle complex orders (Form 3/Form 4)
+                Debug.WriteLine($"order string that is being checked: {orderString}");
+                if (orderString.Contains("=") && (orderString.StartsWith("DrinkName="))) // Handle complex orders (Form 3/Form 4)
                 {
                     Dictionary<string, object> orderData = new Dictionary<string, object>();
                     try
@@ -553,14 +579,20 @@ namespace WinFormsApp1
                 }
                 else  // Handle simple orders (like from DisplayOrderFrappe)
                 {
+                    Debug.WriteLine($"Order string being received in else: {orderString}");
                     string[] parts = orderString.Split('|');
                     if (parts.Length >= 2)
                     {
                        
                         string drinkName = parts[0].Trim();
                         string pricePart = parts[1].Trim();
-                        decimal localBasePrice = 0; 
+                        decimal localBasePrice = 0;  
                         int priceIndex = pricePart.IndexOf("₱");
+                        string quantityPart = parts.FirstOrDefault(p => p.Trim().StartsWith("Quantity="));
+                        if (quantityPart != null && int.TryParse(quantityPart.Substring("Quantity=".Length).Trim(), out int qty))
+                        {
+                            quantity = qty; // Update quantity if found in the orderString
+                        }
                         if (priceIndex != -1 && decimal.TryParse(pricePart.Substring(priceIndex + 1), out localBasePrice))
                         {
                             string orderText = $"{drinkName}\nPrice: ₱{localBasePrice:N2}";
@@ -581,12 +613,24 @@ namespace WinFormsApp1
                             Button removeButton = new Button
                             {
                                 Text = "Remove",
-                                Location = new Point(panel6.Width - 80, yOffset + (orderLabel.Height / 2) - 12),
+                                Location = new Point(panel6.Width - 160, yOffset + (orderLabel.Height / 2) - 12),
                                 Size = new Size(70, 25),
                                 Tag = orderString // You can tag the order string itself here
                             };
                             removeButton.Click += RemoveButton_Click;
                             panel6.Controls.Add(removeButton);
+
+                            string orderStringWQuantity = $"{orderString}|Quantity={quantity}";
+                            Button editSimpleButton = new Button
+                            {
+                                Text = "Edit",
+                                Location = new Point(panel6.Width - 80, yOffset + (orderLabel.Height / 2) - 12), // Position it on the right side
+                                Size = new Size(60, 25)  // Set appropriate size for the button
+                            };
+                            Debug.WriteLine($"Order string to edit button: {orderStringWQuantity}"); 
+                            editSimpleButton.Tag = orderStringWQuantity;
+                            editSimpleButton.Click += editSimpleOrders;
+                            panel6.Controls.Add(editSimpleButton);
                             yOffset = removeButton.Bottom + 10;
                             finalPrice += subTotalPrice;
 
@@ -668,6 +712,112 @@ namespace WinFormsApp1
                 button1.Visible = false;
                 button52.Visible = false;
                 confirmButton.Visible = false;
+            }
+            Debug.WriteLine("--- END UpdateOrderDisplay ---");
+        }
+
+        private void editSimpleOrders(object sender, EventArgs e)
+        {
+            Button editButton = (Button)sender;
+            string orderToEdit = editButton.Tag as string;
+            if (!string.IsNullOrEmpty(orderToEdit) && orderToEdit.StartsWith("French Fries ("))
+            {
+                // Editing a French Fries order
+                string[] parts = orderToEdit.Split('|');
+                string flavorPart = parts[0]; // e.g., "French Fries (Cheese)"
+                string currentFlavor = flavorPart.Substring(flavorPart.IndexOf('(') + 1, flavorPart.IndexOf(')') - flavorPart.IndexOf('(') - 1).Trim();
+                int currentQuantity = 1;
+                string quantityPart = parts.FirstOrDefault(p => p.StartsWith("Quantity="));
+                if (quantityPart != null)
+                {
+                    int.TryParse(quantityPart.Substring("Quantity=".Length), out currentQuantity);
+                }
+                decimal currentPrice = 0;
+                string pricePart = parts.FirstOrDefault(p => p.StartsWith("Price: ₱"));
+                if (pricePart != null)
+                {
+                    decimal.TryParse(pricePart.Substring("Price: ₱".Length), out currentPrice);
+                }
+
+                using (Form5 form5 = new Form5(currentQuantity)) // Pass current quantity for editing
+                {
+                    // You might want to add logic to Form5 to pre-select the current flavor
+                    // For now, the user can choose the flavor again
+
+                    if (form5.ShowDialog() == DialogResult.OK)
+                    {
+                        string newFlavor = form5.SelectedOption;
+                        int newQuantity = form5.SelectedQuantity;
+
+                        // Remove the original fries order
+                        orderList.RemoveAll(order => order == orderToEdit);
+
+                        // Add the updated fries order
+                        string updatedOrder = $"French Fries ({newFlavor})|Price: ₱{currentPrice:N2}|Quantity={newQuantity}";
+                        orderList.Add(updatedOrder);
+                        UpdateOrderDisplay();
+                    }
+                }
+            }
+            else if (!string.IsNullOrEmpty(orderToEdit))
+            {
+                string[] partsToMatch = orderToEdit.Split('|').Take(2).Select(p => p.Trim()).ToArray();
+                if (partsToMatch.Length == 2 && partsToMatch[1].StartsWith("Price: ₱"))
+                {
+                    string itemName = partsToMatch[0];
+                    decimal price = decimal.Parse(partsToMatch[1].Substring("Price: ₱".Length).Trim());
+                    int newQuantity = 1;
+
+                    string quantityPart = orderToEdit.Split('|').FirstOrDefault(p => p.Trim().StartsWith("Quantity="));
+                    int currentQuantity = 1;
+                    if (quantityPart != null && int.TryParse(quantityPart.Trim().Substring("Quantity=".Length), out int qty))
+                    {
+                        currentQuantity = qty;
+                    }
+
+                    using (Form9 editForm = new Form9(itemName, currentQuantity))
+                    {
+                        editForm.StartPosition = FormStartPosition.CenterParent;
+                        DialogResult result = editForm.ShowDialog();
+                        Debug.WriteLine($"DialogResult from Form9: {result}");
+                        if (result == DialogResult.OK)
+                        {
+                            newQuantity = editForm.NewQuantity;
+                            Debug.WriteLine($"Quantity passed from form9 to form2: {newQuantity}");
+
+                            // Robustly remove all original matching orders
+                            int removedCount = orderList.RemoveAll(order =>
+                            {
+                                string[] orderParts = order.Split('|');
+                                if (orderParts.Length >= 2 && orderParts[0].Trim() == itemName && orderParts[1].Trim() == partsToMatch[1])
+                                {
+                                    return true;
+                                }
+                                return false;
+                            });
+                            Debug.WriteLine($"[EDIT] Removed {removedCount} original order(s) for editing.");
+
+                            // Add the updated order
+                            string updatedOrder = $"{itemName}|Price: ₱{price:N2}|Quantity={newQuantity}";
+                            orderList.Add(updatedOrder);
+
+                            UpdateOrderDisplay();
+                            Debug.WriteLine($"Calling updateOrderDisplay");
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"Form9 dialog result was not OK.");
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Error parsing order for editing.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Cannot edit this order.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -812,70 +962,74 @@ namespace WinFormsApp1
              if (orderList.Count > 0)
              {
                  decimal totalPrice = 0;
+                Dictionary<string, int> mergedOrders = new Dictionary<string, int>();
 
-                 foreach (string originalOrderString in orderList)
-                 {
-                     Debug.WriteLine($"Processing original order: {originalOrderString}");
-                     if (originalOrderString.Contains("=")) // Handle complex orders
-                     {
-                         string orderKeyWithoutQuantity = string.Join("|", originalOrderString.Split('|').Where(p => !p.StartsWith("Quantity=")));
-                         bool foundMatch = false;
+                foreach (string originalOrderString in orderList)
+                {
+                    Debug.WriteLine($"Processing original order: {originalOrderString}");
+                    string orderKey = originalOrderString;
+                    int quantity = 1;
+                    string[] parts = originalOrderString.Split('|');
+                    string orderKeyWithoutQuantity = "";
+                    foreach (string part in parts)
+                    {
+                        if (part.StartsWith("Quantity="))
+                        {
+                            if (int.TryParse(part.Substring("Quantity=".Length).Trim(), out int qty))
+                            {
+                                quantity = qty;
+                            }
+                        }
+                        else
+                        {
+                            orderKeyWithoutQuantity += (string.IsNullOrEmpty(orderKeyWithoutQuantity) ? "" : "|") + part;
+                        }
+                    }
+                    orderKey = orderKeyWithoutQuantity;
+                    if (mergedOrders.ContainsKey(orderKey))
+                    {
+                        mergedOrders[orderKey] += quantity;
+                    }
+                    else
+                    {
+                        mergedOrders[orderKey] = quantity;
+                    }
+                }
+                List<string> mergedOrderListForConfirmation = new List<string>();
+                foreach (var mergedOrder in mergedOrders)
+                {
+                    string mergedOrderStringWithQuantity = $"{mergedOrder.Key}|Quantity={mergedOrder.Value}";
+                    mergedOrderListForConfirmation.Add(mergedOrderStringWithQuantity);
+                    decimal itemPrice = 0;
+                    int quantity = mergedOrder.Value;
+                    string[] parts = mergedOrder.Key.Split('|');
 
-                         foreach (var keyValuePair in updatedOrderCounts)
-                         {
-                             if (keyValuePair.Key.StartsWith(orderKeyWithoutQuantity + "|Quantity="))
-                             {
-                                 string updatedOrderStringWithQuantity = keyValuePair.Key;
-                                 int quantity = keyValuePair.Value;
-                                 decimal itemPrice = 0;
-
-                                 string[] parts = updatedOrderStringWithQuantity.Split('|');
-                                 foreach (string part in parts)
-                                 {
-                                     if (part.StartsWith("TotalPrice="))
-                                     {
-                                         decimal.TryParse(part.Substring("TotalPrice=".Length), out itemPrice);
-                                         Debug.WriteLine($"TotalPrice is: {itemPrice}");
-                                         break;
-                                     }
-                                     if (part.StartsWith("Quantity="))
-                                     {
-                                         int.TryParse(part.Substring("Quantity=".Length), out quantity);
-                                         Debug.WriteLine($"Quantity is: {quantity}");
-                                     }
-
-                                 }
-                                 totalPrice += itemPrice * quantity;
-                                 foundMatch = true;
-                                 break;
-                             }
-                         }
-
-                     }
-                     else // Handle simple orders
-                     {
-                         string[] parts = originalOrderString.Split('|');
-                         if (parts.Length >= 2)
-                         {
-                             string pricePart = parts[1].Trim(); // Trim any leading/trailing whitespace
-                             int priceIndex = pricePart.IndexOf("₱");
-                             if (priceIndex != -1 && decimal.TryParse(pricePart.Substring(priceIndex + 1), out decimal itemPrice))
-                             {
-
-                                 totalPrice += itemPrice;
-                             }
-                             else
-                             {
-
-                             }
-
-                         }
-                     }
-                 }
-                 decimal discountAmount = totalPrice * (currentDiscountPercentage / 100);
+                    foreach (string part in parts)
+                    {
+                        string trimmedPart = part.Trim();
+                        if (trimmedPart.StartsWith("TotalPrice="))
+                        {
+                            if (decimal.TryParse(trimmedPart.Substring("TotalPrice=".Length), out itemPrice))
+                            {
+                                break;
+                            }
+                        }
+                        else if (trimmedPart.StartsWith("Price: ₱"))
+                        {
+                            int priceIndex = trimmedPart.IndexOf("₱");
+                            if (priceIndex != -1 && decimal.TryParse(trimmedPart.Substring(priceIndex + 1), out itemPrice))
+                            {
+                                break;
+                            }
+                        }
+                      
+                    }
+                    totalPrice += itemPrice * quantity;
+                }
+                decimal discountAmount = totalPrice * (currentDiscountPercentage / 100);
                  // Create an instance of Form7, passing the calculated totalPrice
                  Debug.WriteLine($"total price being passed: {totalPrice}");
-                 Form7 confirmationDetailsForm = new Form7(totalPrice, discountAmount, orderList, form2instance);
+                 Form7 confirmationDetailsForm = new Form7(totalPrice, discountAmount, mergedOrderListForConfirmation, form2instance);
 
                  // Optionally, hide the current form
                  this.Hide();
@@ -1434,10 +1588,11 @@ namespace WinFormsApp1
 
         private void button51_Click(object sender, EventArgs e)
         {
-            Form5 form5 = new Form5();
+            Form5 form5 = new Form5(1);
             if (form5.ShowDialog() == DialogResult.OK)
             {
                 string selectedOption = form5.SelectedOption;
+                int selectedQuantity = form5.SelectedQuantity;
                 string drinkName = "French Fries"; // Assuming the drink is Long Black
 
                 // Access the price from your dictionary
@@ -1446,7 +1601,7 @@ namespace WinFormsApp1
                     decimal price = drinkPrices[drinkName];
 
                     // Format the order string to include the selected option in parentheses
-                    string orderString = $"{drinkName} ({selectedOption}) | Price: ₱{price:N2}";
+                    string orderString = $"{drinkName} ({selectedOption})|Price: ₱{price:N2}|Quantity={selectedQuantity}";
 
                     orderList.Add(orderString);
                     UpdateOrderDisplay();

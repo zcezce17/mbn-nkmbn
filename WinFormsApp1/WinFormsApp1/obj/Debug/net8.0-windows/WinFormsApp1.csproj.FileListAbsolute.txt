@@ -24,3 +24,4 @@ E:\Github Repo\mbn-nkmbn\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinF
 E:\Github Repo\mbn-nkmbn\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.Form7.resources
 E:\Github Repo\mbn-nkmbn\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.ReceiptForm.resources
 E:\Github Repo\mbn-nkmbn\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.Form8.resources
+E:\Github Repo\mbn-nkmbn\WinFormsApp1\WinFormsApp1\obj\Debug\net8.0-windows\WinFormsApp1.Form9.resources

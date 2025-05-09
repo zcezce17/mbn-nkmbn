@@ -186,22 +186,23 @@ namespace WinFormsApp1 // Replace with your actual namespace
                 decimal price = 0;
                 decimal totalAddonPriceForItem = 0;
                 List<string> addonsToPrint = new List<string>();
-                if (orderString.Contains("="))
-                {
-                    string[] parts = orderString.Split('|');
-                    foreach (string part in parts)
+                string[] parts = orderString.Split('|');
+
+                foreach (string part in parts)
                     {
-                        Debug.WriteLine($"Part: {part}");
-                        if (part.StartsWith("DrinkName=")) itemName = part.Substring("DrinkName=".Length);
-                        else if (part.StartsWith("Temperature="))
+                    string trimmedPart = part.Trim();
+                    Debug.WriteLine($"Part (Receipt - Trimmed): {trimmedPart}");
+                    if (trimmedPart.StartsWith("DrinkName=")) itemName = trimmedPart.Substring("DrinkName=".Length).Trim();
+                    else if (trimmedPart.StartsWith("Temperature="))
+                    {
+                            temperature = trimmedPart.Substring("Temperature=".Length).Trim();
+                    }
+                    else if (trimmedPart.StartsWith("Quantity=")) int.TryParse(trimmedPart.Substring("Quantity=".Length).Trim(), out quantity);
+                    else if (trimmedPart.StartsWith("Price=")) decimal.TryParse(trimmedPart.Substring("Price=".Length).Trim(), out price);
+                    else if (trimmedPart.StartsWith("TotalPrice=")) decimal.TryParse(trimmedPart.Substring("TotalPrice=".Length).Trim(), out price);
+                    else if (trimmedPart.StartsWith("Addons="))
                         {
-                            temperature = part.Substring("Temperature=".Length);
-                        }
-                        else if (part.StartsWith("Quantity=")) int.TryParse(part.Substring("Quantity=".Length), out quantity);
-                        else if (part.StartsWith("Price=")) decimal.TryParse(part.Substring("Price=".Length), out price);
-                        else if (part.StartsWith("Addons="))
-                        {
-                            string addonString = part.Substring("Addons=".Length);
+                            string addonString = trimmedPart.Substring("Addons=".Length);
                             string[] individualAddons = addonString.Split(',');
                             foreach (string addon in individualAddons)
                             {
@@ -281,8 +282,22 @@ namespace WinFormsApp1 // Replace with your actual namespace
                                 }
                             }
                         }
+                    else if (trimmedPart.StartsWith("Price: ₱"))
+                    {
+                        int priceIndex = trimmedPart.IndexOf("₱");
+                        if (priceIndex != -1) decimal.TryParse(trimmedPart.Substring(priceIndex + 1).Trim(), out price);
+                        // For simple orders, the name might be the first part if no DrinkName=
+                        if (string.IsNullOrEmpty(itemName) && !trimmedPart.StartsWith("Price:"))
+                        {
+                            itemName = trimmedPart.Trim();
+                        }
+                    }
+                    else if (!trimmedPart.StartsWith("Price:") && !trimmedPart.StartsWith("TotalPrice:") && !trimmedPart.StartsWith("Quantity:") && !trimmedPart.StartsWith("DrinkName:") && !trimmedPart.StartsWith("Temperature:") && !trimmedPart.StartsWith("Addons:"))
+                    {
+                        itemName = trimmedPart; // Handle simple order names
                     }
                 }
+                
                  if (!string.IsNullOrEmpty(itemName))
                 {
                     string itemWithTemperature = itemName;
@@ -290,43 +305,23 @@ namespace WinFormsApp1 // Replace with your actual namespace
                     {
                         itemWithTemperature += $"({temperature})";
                     }
-                    string priceText = $"₱{(price +totalAddonPriceForItem) * quantity:N2}";
-                    string quantityAndUnitPrice = $"{quantity} x ₱{price + totalAddonPriceForItem:N2}";
+                    string priceText = $"₱{price * quantity:N2}";
+                    
 
                     receiptItemsListBox.Items.Add($"{leftAlign(itemWithTemperature, itemColWidth)}{rightAlign(priceText, priceColWidth)}");
                     totalItemsHeight += itemHeight;
+                    
                     foreach (string addonText in addonsToPrint)
                     {
                         receiptItemsListBox.Items.Add(leftAlign($" +{addonText}", itemColWidth));
                         totalItemsHeight += itemHeight;
                     }
-                    receiptItemsListBox.Items.Add(leftAlign(quantityAndUnitPrice, itemColWidth));
+                    receiptItemsListBox.Items.Add(leftAlign($"{quantity} x ₱{price}", itemColWidth));
                     totalItemsHeight += itemHeight;
+                   
                 }
-                else
-                {
-                    string[] parts = orderString.Split('|');
-                    if (parts.Length >= 2)
-                    {
-                        itemName = parts[0].Trim();
-                        if (parts[1].Trim().StartsWith("Price: ₱") && decimal.TryParse(parts[1].Trim().Substring("Price: ₱".Length), out price))
-                        {
-                            Debug.WriteLine($"Priceparse: {price}");
-                            // Quantity is 1 by default
-                        }
-                    }
-                    string priceText = $"{price * quantity:N2}";
-                    Debug.WriteLine($"PriceText: {price}");
-                    string quantityAndUnitPrice = $"{quantity} x {price:N2}";
-                    Debug.WriteLine($"PriceQ: {price}");
-                    receiptItemsListBox.Items.Add($"{leftAlign(itemName, itemColWidth)}{rightAlign(priceText, priceColWidth)}");
-                    totalItemsHeight += itemHeight;
-                    receiptItemsListBox.Items.Add(leftAlign(quantityAndUnitPrice, itemColWidth));
-                    totalItemsHeight += itemHeight;
-                }
-
             }
-
+            
             receiptItemsListBox.Items.Add(new string('-', itemColWidth + spacing + priceColWidth));
             totalItemsHeight += itemHeight;
             subtotalLabel.Text = $"Subtotal: ₱{_totalAmount:N2}";

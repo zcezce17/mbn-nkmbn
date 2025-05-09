@@ -5,6 +5,9 @@ namespace WinFormsApp1
         public Form1()
         {
             InitializeComponent();
+            int formWidth = this.ClientSize.Width;
+            int labelWidth = this.label1.PreferredWidth;
+            this.label1.Location = new Point((formWidth - labelWidth) / 2, 40);
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -29,5 +32,7 @@ namespace WinFormsApp1
                 MessageBox.Show("Invalid username or password", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
     }
 }

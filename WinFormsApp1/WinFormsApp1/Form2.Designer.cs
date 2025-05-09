@@ -103,7 +103,7 @@
             // 
             // panel1
             // 
-            panel1.BackColor = SystemColors.GrayText;
+            panel1.BackColor = Color.FromArgb(45, 45, 48);
             panel1.Controls.Add(button5);
             panel1.Controls.Add(button7);
             panel1.Controls.Add(button6);
@@ -120,6 +120,8 @@
             // 
             // button5
             // 
+            button5.BackColor = Color.FromArgb(60, 63, 65);
+            button5.FlatAppearance.BorderSize = 0;
             button5.FlatStyle = FlatStyle.Flat;
             button5.Font = new Font("Verdana", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button5.ForeColor = Color.White;
@@ -136,6 +138,8 @@
             // 
             // button7
             // 
+            button7.BackColor = Color.FromArgb(60, 63, 65);
+            button7.FlatAppearance.BorderSize = 0;
             button7.FlatStyle = FlatStyle.Flat;
             button7.Font = new Font("Verdana", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button7.ForeColor = Color.White;
@@ -152,6 +156,8 @@
             // 
             // button6
             // 
+            button6.BackColor = Color.FromArgb(60, 63, 65);
+            button6.FlatAppearance.BorderSize = 0;
             button6.FlatStyle = FlatStyle.Flat;
             button6.Font = new Font("Verdana", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button6.ForeColor = Color.White;
@@ -168,6 +174,8 @@
             // 
             // button4
             // 
+            button4.BackColor = Color.FromArgb(60, 63, 65);
+            button4.FlatAppearance.BorderSize = 0;
             button4.FlatStyle = FlatStyle.Flat;
             button4.Font = new Font("Verdana", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button4.ForeColor = Color.White;
@@ -184,6 +192,8 @@
             // 
             // button3
             // 
+            button3.BackColor = Color.FromArgb(60, 63, 65);
+            button3.FlatAppearance.BorderSize = 0;
             button3.FlatStyle = FlatStyle.Flat;
             button3.Font = new Font("Verdana", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button3.ForeColor = Color.White;
@@ -200,6 +210,8 @@
             // 
             // button2
             // 
+            button2.BackColor = Color.FromArgb(60, 63, 65);
+            button2.FlatAppearance.BorderSize = 0;
             button2.FlatStyle = FlatStyle.Flat;
             button2.Font = new Font("Verdana", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button2.ForeColor = Color.White;
@@ -225,7 +237,8 @@
             // 
             // pictureBox1
             // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.BackColor = SystemColors.InactiveCaptionText;
+            pictureBox1.BackgroundImage = (Image)resources.GetObject("pictureBox1.BackgroundImage");
             pictureBox1.Location = new Point(0, 0);
             pictureBox1.Margin = new Padding(0);
             pictureBox1.Name = "pictureBox1";
@@ -260,9 +273,12 @@
             // 
             // button52
             // 
-            button52.FlatAppearance.BorderColor = Color.Black;
-            button52.FlatAppearance.BorderSize = 3;
-            button52.FlatStyle = FlatStyle.Popup;
+           
+            button52.FlatAppearance.BorderSize = 0;
+            button52.FlatStyle = FlatStyle.Flat;
+            button52.BackColor = Color.FromArgb(23, 23, 23);
+            button52.ForeColor = Color.White;
+            button52.Cursor = Cursors.Hand;
             button52.Font = new Font("Century", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button52.Location = new Point(169, 481);
             button52.Margin = new Padding(1);
@@ -270,7 +286,7 @@
             button52.Size = new Size(64, 35);
             button52.TabIndex = 1;
             button52.Text = "Discount";
-            button52.UseVisualStyleBackColor = true;
+            button52.UseVisualStyleBackColor = false;
             button52.Click += button52_Click;
             // 
             // button1
@@ -286,19 +302,27 @@
             // 
             // button8
             // 
-            button8.BackColor = SystemColors.ActiveBorder;
+            button8.BackColor = Color.FromArgb(148, 137, 121);
+            button8.Cursor = Cursors.Hand;
+            button8.FlatAppearance.BorderSize = 0;
+            button8.FlatStyle = FlatStyle.Flat;
+            button8.ForeColor = Color.Black;
             button8.Location = new Point(52, 65);
             button8.Margin = new Padding(3, 2, 3, 2);
             button8.Name = "button8";
             button8.Size = new Size(169, 154);
             button8.TabIndex = 1;
-            button8.Text = "Long Black\r\n(Water + Espresso)\r\n\r\n\r\n₱100";
+            button8.Text = "Long Black\r\n(Water + Espresso)\r\n\r\n₱100";
             button8.UseVisualStyleBackColor = false;
             button8.Click += button8_Click;
             // 
             // button13
             // 
-            button13.BackColor = SystemColors.ActiveBorder;
+            button13.BackColor = Color.FromArgb(148, 137, 121);
+            button13.Cursor = Cursors.Hand;
+            button13.FlatAppearance.BorderSize = 0;
+            button13.FlatStyle = FlatStyle.Flat;
+            button13.ForeColor = Color.Black;
             button13.Location = new Point(52, 252);
             button13.Margin = new Padding(3, 2, 3, 2);
             button13.Name = "button13";
@@ -310,7 +334,10 @@
             // 
             // button18
             // 
-            button18.BackColor = SystemColors.ActiveBorder;
+            button18.BackColor = Color.FromArgb(148, 137, 121);
+            button18.Cursor = Cursors.Hand;
+            button18.FlatAppearance.BorderSize = 0;
+            button18.FlatStyle = FlatStyle.Flat;
             button18.Location = new Point(389, 427);
             button18.Margin = new Padding(3, 2, 3, 2);
             button18.Name = "button18";
@@ -322,7 +349,10 @@
             // 
             // button19
             // 
-            button19.BackColor = SystemColors.ActiveBorder;
+            button19.BackColor = Color.FromArgb(148, 137, 121);
+            button19.Cursor = Cursors.Hand;
+            button19.FlatAppearance.BorderSize = 0;
+            button19.FlatStyle = FlatStyle.Flat;
             button19.Location = new Point(269, 679);
             button19.Margin = new Padding(3, 2, 3, 2);
             button19.Name = "button19";
@@ -334,7 +364,10 @@
             // 
             // button22
             // 
-            button22.BackColor = SystemColors.ActiveBorder;
+            button22.BackColor = Color.FromArgb(148, 137, 121);
+            button22.Cursor = Cursors.Hand;
+            button22.FlatAppearance.BorderSize = 0;
+            button22.FlatStyle = FlatStyle.Flat;
             button22.Location = new Point(480, 679);
             button22.Margin = new Padding(3, 2, 3, 2);
             button22.Name = "button22";
@@ -346,7 +379,10 @@
             // 
             // button23
             // 
-            button23.BackColor = SystemColors.ActiveBorder;
+            button23.BackColor = Color.FromArgb(148, 137, 121);
+            button23.Cursor = Cursors.Hand;
+            button23.FlatAppearance.BorderSize = 0;
+            button23.FlatStyle = FlatStyle.Flat;
             button23.Location = new Point(694, 679);
             button23.Margin = new Padding(3, 2, 3, 2);
             button23.Name = "button23";
@@ -358,7 +394,10 @@
             // 
             // button24
             // 
-            button24.BackColor = SystemColors.ActiveBorder;
+            button24.BackColor = Color.FromArgb(148, 137, 121);
+            button24.Cursor = Cursors.Hand;
+            button24.FlatAppearance.BorderSize = 0;
+            button24.FlatStyle = FlatStyle.Flat;
             button24.Location = new Point(901, 679);
             button24.Margin = new Padding(3, 2, 3, 2);
             button24.Name = "button24";
@@ -370,7 +409,10 @@
             // 
             // button21
             // 
-            button21.BackColor = SystemColors.ActiveBorder;
+            button21.BackColor = Color.FromArgb(148, 137, 121);
+            button21.Cursor = Cursors.Hand;
+            button21.FlatAppearance.BorderSize = 0;
+            button21.FlatStyle = FlatStyle.Flat;
             button21.Location = new Point(52, 679);
             button21.Margin = new Padding(3, 2, 3, 2);
             button21.Name = "button21";
@@ -382,7 +424,10 @@
             // 
             // button25
             // 
-            button25.BackColor = SystemColors.ActiveBorder;
+            button25.BackColor = Color.FromArgb(148, 137, 121);
+            button25.Cursor = Cursors.Hand;
+            button25.FlatAppearance.BorderSize = 0;
+            button25.FlatStyle = FlatStyle.Flat;
             button25.Location = new Point(86, 865);
             button25.Margin = new Padding(3, 2, 3, 2);
             button25.Name = "button25";
@@ -394,7 +439,10 @@
             // 
             // button29
             // 
-            button29.BackColor = SystemColors.ActiveBorder;
+            button29.BackColor = Color.FromArgb(148, 137, 121);
+            button29.Cursor = Cursors.Hand;
+            button29.FlatAppearance.BorderSize = 0;
+            button29.FlatStyle = FlatStyle.Flat;
             button29.Location = new Point(163, 1123);
             button29.Margin = new Padding(3, 2, 3, 2);
             button29.Name = "button29";
@@ -406,7 +454,10 @@
             // 
             // button34
             // 
-            button34.BackColor = SystemColors.ActiveBorder;
+            button34.BackColor = Color.FromArgb(148, 137, 121);
+            button34.Cursor = Cursors.Hand;
+            button34.FlatAppearance.BorderSize = 0;
+            button34.FlatStyle = FlatStyle.Flat;
             button34.Location = new Point(376, 1316);
             button34.Margin = new Padding(3, 2, 3, 2);
             button34.Name = "button34";
@@ -418,7 +469,10 @@
             // 
             // button35
             // 
-            button35.BackColor = SystemColors.ActiveBorder;
+            button35.BackColor = Color.FromArgb(148, 137, 121);
+            button35.Cursor = Cursors.Hand;
+            button35.FlatAppearance.BorderSize = 0;
+            button35.FlatStyle = FlatStyle.Flat;
             button35.Location = new Point(593, 1316);
             button35.Margin = new Padding(3, 2, 3, 2);
             button35.Name = "button35";
@@ -430,7 +484,10 @@
             // 
             // button36
             // 
-            button36.BackColor = SystemColors.ActiveBorder;
+            button36.BackColor = Color.FromArgb(148, 137, 121);
+            button36.Cursor = Cursors.Hand;
+            button36.FlatAppearance.BorderSize = 0;
+            button36.FlatStyle = FlatStyle.Flat;
             button36.Location = new Point(813, 1316);
             button36.Margin = new Padding(3, 2, 3, 2);
             button36.Name = "button36";
@@ -442,7 +499,10 @@
             // 
             // button30
             // 
-            button30.BackColor = SystemColors.ActiveBorder;
+            button30.BackColor = Color.FromArgb(148, 137, 121);
+            button30.Cursor = Cursors.Hand;
+            button30.FlatAppearance.BorderSize = 0;
+            button30.FlatStyle = FlatStyle.Flat;
             button30.Location = new Point(376, 1123);
             button30.Margin = new Padding(3, 2, 3, 2);
             button30.Name = "button30";
@@ -454,7 +514,10 @@
             // 
             // button31
             // 
-            button31.BackColor = SystemColors.ActiveBorder;
+            button31.BackColor = Color.FromArgb(148, 137, 121);
+            button31.Cursor = Cursors.Hand;
+            button31.FlatAppearance.BorderSize = 0;
+            button31.FlatStyle = FlatStyle.Flat;
             button31.Location = new Point(593, 1123);
             button31.Margin = new Padding(3, 2, 3, 2);
             button31.Name = "button31";
@@ -466,7 +529,10 @@
             // 
             // button32
             // 
-            button32.BackColor = SystemColors.ActiveBorder;
+            button32.BackColor = Color.FromArgb(148, 137, 121);
+            button32.Cursor = Cursors.Hand;
+            button32.FlatAppearance.BorderSize = 0;
+            button32.FlatStyle = FlatStyle.Flat;
             button32.Location = new Point(813, 1123);
             button32.Margin = new Padding(3, 2, 3, 2);
             button32.Name = "button32";
@@ -478,7 +544,10 @@
             // 
             // button33
             // 
-            button33.BackColor = SystemColors.ActiveBorder;
+            button33.BackColor = Color.FromArgb(148, 137, 121);
+            button33.Cursor = Cursors.Hand;
+            button33.FlatAppearance.BorderSize = 0;
+            button33.FlatStyle = FlatStyle.Flat;
             button33.Location = new Point(163, 1316);
             button33.Margin = new Padding(3, 2, 3, 2);
             button33.Name = "button33";
@@ -490,7 +559,10 @@
             // 
             // button37
             // 
-            button37.BackColor = SystemColors.ActiveBorder;
+            button37.BackColor = Color.FromArgb(148, 137, 121);
+            button37.Cursor = Cursors.Hand;
+            button37.FlatAppearance.BorderSize = 0;
+            button37.FlatStyle = FlatStyle.Flat;
             button37.Location = new Point(163, 1568);
             button37.Margin = new Padding(3, 2, 3, 2);
             button37.Name = "button37";
@@ -502,7 +574,10 @@
             // 
             // button41
             // 
-            button41.BackColor = SystemColors.ActiveBorder;
+            button41.BackColor = Color.FromArgb(148, 137, 121);
+            button41.Cursor = Cursors.Hand;
+            button41.FlatAppearance.BorderSize = 0;
+            button41.FlatStyle = FlatStyle.Flat;
             button41.Location = new Point(264, 2034);
             button41.Margin = new Padding(3, 2, 3, 2);
             button41.Name = "button41";
@@ -514,7 +589,10 @@
             // 
             // button47
             // 
-            button47.BackColor = SystemColors.ActiveBorder;
+            button47.BackColor = Color.FromArgb(148, 137, 121);
+            button47.Cursor = Cursors.Hand;
+            button47.FlatAppearance.BorderSize = 0;
+            button47.FlatStyle = FlatStyle.Flat;
             button47.Location = new Point(270, 2291);
             button47.Margin = new Padding(3, 2, 3, 2);
             button47.Name = "button47";
@@ -526,7 +604,10 @@
             // 
             // button48
             // 
-            button48.BackColor = SystemColors.ActiveBorder;
+            button48.BackColor = Color.FromArgb(148, 137, 121);
+            button48.Cursor = Cursors.Hand;
+            button48.FlatAppearance.BorderSize = 0;
+            button48.FlatStyle = FlatStyle.Flat;
             button48.Location = new Point(501, 2291);
             button48.Margin = new Padding(3, 2, 3, 2);
             button48.Name = "button48";
@@ -538,7 +619,10 @@
             // 
             // button49
             // 
-            button49.BackColor = SystemColors.ActiveBorder;
+            button49.BackColor = Color.FromArgb(148, 137, 121);
+            button49.Cursor = Cursors.Hand;
+            button49.FlatAppearance.BorderSize = 0;
+            button49.FlatStyle = FlatStyle.Flat;
             button49.Location = new Point(733, 2291);
             button49.Margin = new Padding(3, 2, 3, 2);
             button49.Name = "button49";
@@ -550,7 +634,10 @@
             // 
             // button50
             // 
-            button50.BackColor = SystemColors.ActiveBorder;
+            button50.BackColor = Color.FromArgb(148, 137, 121);
+            button50.Cursor = Cursors.Hand;
+            button50.FlatAppearance.BorderSize = 0;
+            button50.FlatStyle = FlatStyle.Flat;
             button50.Location = new Point(501, 2490);
             button50.Margin = new Padding(3, 2, 3, 2);
             button50.Name = "button50";
@@ -562,7 +649,10 @@
             // 
             // button51
             // 
-            button51.BackColor = SystemColors.ActiveBorder;
+            button51.BackColor = Color.FromArgb(148, 137, 121);
+            button51.Cursor = Cursors.Hand;
+            button51.FlatAppearance.BorderSize = 0;
+            button51.FlatStyle = FlatStyle.Flat;
             button51.Location = new Point(733, 2490);
             button51.Margin = new Padding(3, 2, 3, 2);
             button51.Name = "button51";
@@ -574,7 +664,10 @@
             // 
             // button53
             // 
-            button53.BackColor = SystemColors.ActiveBorder;
+            button53.BackColor = Color.FromArgb(148, 137, 121);
+            button53.Cursor = Cursors.Hand;
+            button53.FlatAppearance.BorderSize = 0;
+            button53.FlatStyle = FlatStyle.Flat;
             button53.Location = new Point(270, 2492);
             button53.Margin = new Padding(3, 2, 3, 2);
             button53.Name = "button53";
@@ -586,7 +679,10 @@
             // 
             // button43
             // 
-            button43.BackColor = SystemColors.ActiveBorder;
+            button43.BackColor = Color.FromArgb(148, 137, 121);
+            button43.Cursor = Cursors.Hand;
+            button43.FlatAppearance.BorderSize = 0;
+            button43.FlatStyle = FlatStyle.Flat;
             button43.Location = new Point(733, 1840);
             button43.Margin = new Padding(3, 2, 3, 2);
             button43.Name = "button43";
@@ -598,7 +694,10 @@
             // 
             // button42
             // 
-            button42.BackColor = SystemColors.ActiveBorder;
+            button42.BackColor = Color.FromArgb(148, 137, 121);
+            button42.Cursor = Cursors.Hand;
+            button42.FlatAppearance.BorderSize = 0;
+            button42.FlatStyle = FlatStyle.Flat;
             button42.Location = new Point(264, 1840);
             button42.Margin = new Padding(3, 2, 3, 2);
             button42.Name = "button42";
@@ -610,7 +709,10 @@
             // 
             // button44
             // 
-            button44.BackColor = SystemColors.ActiveBorder;
+            button44.BackColor = Color.FromArgb(148, 137, 121);
+            button44.Cursor = Cursors.Hand;
+            button44.FlatAppearance.BorderSize = 0;
+            button44.FlatStyle = FlatStyle.Flat;
             button44.Location = new Point(733, 2034);
             button44.Margin = new Padding(3, 2, 3, 2);
             button44.Name = "button44";
@@ -622,7 +724,10 @@
             // 
             // button46
             // 
-            button46.BackColor = SystemColors.ActiveBorder;
+            button46.BackColor = Color.FromArgb(148, 137, 121);
+            button46.Cursor = Cursors.Hand;
+            button46.FlatAppearance.BorderSize = 0;
+            button46.FlatStyle = FlatStyle.Flat;
             button46.Location = new Point(501, 1840);
             button46.Margin = new Padding(3, 2, 3, 2);
             button46.Name = "button46";
@@ -634,7 +739,10 @@
             // 
             // button45
             // 
-            button45.BackColor = SystemColors.ActiveBorder;
+            button45.BackColor = Color.FromArgb(148, 137, 121);
+            button45.Cursor = Cursors.Hand;
+            button45.FlatAppearance.BorderSize = 0;
+            button45.FlatStyle = FlatStyle.Flat;
             button45.Location = new Point(501, 2034);
             button45.Margin = new Padding(3, 2, 3, 2);
             button45.Name = "button45";
@@ -646,7 +754,10 @@
             // 
             // button38
             // 
-            button38.BackColor = SystemColors.ActiveBorder;
+            button38.BackColor = Color.FromArgb(148, 137, 121);
+            button38.Cursor = Cursors.Hand;
+            button38.FlatAppearance.BorderSize = 0;
+            button38.FlatStyle = FlatStyle.Flat;
             button38.Location = new Point(376, 1568);
             button38.Margin = new Padding(3, 2, 3, 2);
             button38.Name = "button38";
@@ -658,7 +769,10 @@
             // 
             // button39
             // 
-            button39.BackColor = SystemColors.ActiveBorder;
+            button39.BackColor = Color.FromArgb(148, 137, 121);
+            button39.Cursor = Cursors.Hand;
+            button39.FlatAppearance.BorderSize = 0;
+            button39.FlatStyle = FlatStyle.Flat;
             button39.Location = new Point(593, 1568);
             button39.Margin = new Padding(3, 2, 3, 2);
             button39.Name = "button39";
@@ -670,7 +784,10 @@
             // 
             // button40
             // 
-            button40.BackColor = SystemColors.ActiveBorder;
+            button40.BackColor = Color.FromArgb(148, 137, 121);
+            button40.Cursor = Cursors.Hand;
+            button40.FlatAppearance.BorderSize = 0;
+            button40.FlatStyle = FlatStyle.Flat;
             button40.Location = new Point(813, 1568);
             button40.Margin = new Padding(3, 2, 3, 2);
             button40.Name = "button40";
@@ -682,7 +799,10 @@
             // 
             // button26
             // 
-            button26.BackColor = SystemColors.ActiveBorder;
+            button26.BackColor = Color.FromArgb(148, 137, 121);
+            button26.Cursor = Cursors.Hand;
+            button26.FlatAppearance.BorderSize = 0;
+            button26.FlatStyle = FlatStyle.Flat;
             button26.Location = new Point(295, 865);
             button26.Margin = new Padding(3, 2, 3, 2);
             button26.Name = "button26";
@@ -694,7 +814,10 @@
             // 
             // button27
             // 
-            button27.BackColor = SystemColors.ActiveBorder;
+            button27.BackColor = Color.FromArgb(148, 137, 121);
+            button27.Cursor = Cursors.Hand;
+            button27.FlatAppearance.BorderSize = 0;
+            button27.FlatStyle = FlatStyle.Flat;
             button27.Location = new Point(503, 865);
             button27.Margin = new Padding(3, 2, 3, 2);
             button27.Name = "button27";
@@ -706,7 +829,10 @@
             // 
             // button28
             // 
-            button28.BackColor = SystemColors.ActiveBorder;
+            button28.BackColor = Color.FromArgb(148, 137, 121);
+            button28.Cursor = Cursors.Hand;
+            button28.FlatAppearance.BorderSize = 0;
+            button28.FlatStyle = FlatStyle.Flat;
             button28.Location = new Point(710, 865);
             button28.Margin = new Padding(3, 2, 3, 2);
             button28.Name = "button28";
@@ -718,7 +844,10 @@
             // 
             // button20
             // 
-            button20.BackColor = SystemColors.ActiveBorder;
+            button20.BackColor = Color.FromArgb(148, 137, 121);
+            button20.Cursor = Cursors.Hand;
+            button20.FlatAppearance.BorderSize = 0;
+            button20.FlatStyle = FlatStyle.Flat;
             button20.Location = new Point(623, 427);
             button20.Margin = new Padding(3, 2, 3, 2);
             button20.Name = "button20";
@@ -730,7 +859,10 @@
             // 
             // button14
             // 
-            button14.BackColor = SystemColors.ActiveBorder;
+            button14.BackColor = Color.FromArgb(148, 137, 121);
+            button14.Cursor = Cursors.Hand;
+            button14.FlatAppearance.BorderSize = 0;
+            button14.FlatStyle = FlatStyle.Flat;
             button14.Location = new Point(269, 252);
             button14.Margin = new Padding(3, 2, 3, 2);
             button14.Name = "button14";
@@ -742,7 +874,10 @@
             // 
             // button15
             // 
-            button15.BackColor = SystemColors.ActiveBorder;
+            button15.BackColor = Color.FromArgb(148, 137, 121);
+            button15.Cursor = Cursors.Hand;
+            button15.FlatAppearance.BorderSize = 0;
+            button15.FlatStyle = FlatStyle.Flat;
             button15.Location = new Point(480, 252);
             button15.Margin = new Padding(3, 2, 3, 2);
             button15.Name = "button15";
@@ -754,7 +889,10 @@
             // 
             // button16
             // 
-            button16.BackColor = SystemColors.ActiveBorder;
+            button16.BackColor = Color.FromArgb(148, 137, 121);
+            button16.Cursor = Cursors.Hand;
+            button16.FlatAppearance.BorderSize = 0;
+            button16.FlatStyle = FlatStyle.Flat;
             button16.Location = new Point(694, 252);
             button16.Margin = new Padding(3, 2, 3, 2);
             button16.Name = "button16";
@@ -766,7 +904,10 @@
             // 
             // button17
             // 
-            button17.BackColor = SystemColors.ActiveBorder;
+            button17.BackColor = Color.FromArgb(148, 137, 121);
+            button17.Cursor = Cursors.Hand;
+            button17.FlatAppearance.BorderSize = 0;
+            button17.FlatStyle = FlatStyle.Flat;
             button17.Location = new Point(901, 252);
             button17.Margin = new Padding(3, 2, 3, 2);
             button17.Name = "button17";
@@ -778,7 +919,10 @@
             // 
             // button11
             // 
-            button11.BackColor = SystemColors.ActiveBorder;
+            button11.BackColor = Color.FromArgb(148, 137, 121);
+            button11.Cursor = Cursors.Hand;
+            button11.FlatAppearance.BorderSize = 0;
+            button11.FlatStyle = FlatStyle.Flat;
             button11.Location = new Point(269, 65);
             button11.Margin = new Padding(3, 2, 3, 2);
             button11.Name = "button11";
@@ -790,7 +934,10 @@
             // 
             // button12
             // 
-            button12.BackColor = SystemColors.ActiveBorder;
+            button12.BackColor = Color.FromArgb(148, 137, 121);
+            button12.Cursor = Cursors.Hand;
+            button12.FlatAppearance.BorderSize = 0;
+            button12.FlatStyle = FlatStyle.Flat;
             button12.Location = new Point(694, 66);
             button12.Margin = new Padding(3, 2, 3, 2);
             button12.Name = "button12";
@@ -802,7 +949,10 @@
             // 
             // button10
             // 
-            button10.BackColor = SystemColors.ActiveBorder;
+            button10.BackColor = Color.FromArgb(148, 137, 121);
+            button10.Cursor = Cursors.Hand;
+            button10.FlatAppearance.BorderSize = 0;
+            button10.FlatStyle = FlatStyle.Flat;
             button10.Location = new Point(901, 66);
             button10.Margin = new Padding(3, 2, 3, 2);
             button10.Name = "button10";
@@ -814,7 +964,10 @@
             // 
             // button9
             // 
-            button9.BackColor = SystemColors.ActiveBorder;
+            button9.BackColor = Color.FromArgb(148, 137, 121);
+            button9.Cursor = Cursors.Hand;
+            button9.FlatAppearance.BorderSize = 0;
+            button9.FlatStyle = FlatStyle.Flat;
             button9.Location = new Point(480, 65);
             button9.Margin = new Padding(3, 2, 3, 2);
             button9.Name = "button9";
@@ -887,6 +1040,7 @@
             // panel4
             // 
             panel4.AutoScroll = true;
+            panel4.BackColor = Color.FromArgb(223, 208, 184);
             panel4.Controls.Add(label5);
             panel4.Controls.Add(label6);
             panel4.Controls.Add(label4);
@@ -941,7 +1095,7 @@
             panel4.Location = new Point(219, 159);
             panel4.Margin = new Padding(0);
             panel4.Name = "panel4";
-            panel4.Size = new Size(1073, 517);
+            panel4.Size = new Size(1091, 516);
             panel4.TabIndex = 3;
             panel4.Paint += panel4_Paint;
             // 

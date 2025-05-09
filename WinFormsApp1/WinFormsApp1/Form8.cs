@@ -16,20 +16,20 @@ namespace WinFormsApp1
         private decimal _originalTotalPrice;
         private decimal _discountAmount;
         private decimal _finalTotalPrice;
-        private List<string> _orderList;
+        private List<string> _mergedOrderList;
         private string _orderOption;
         private Label paymentSuccessfulLabel;
         private Label changeAmountLabel;
         private Button printReceiptButton;  
         private decimal _amountTendered;
         private string _paymentMethod = "";
-        public Form8(decimal change, decimal originalTotalPrice, decimal discountAmount, List<string> orderList, string orderOption, decimal finaltotalprice, decimal amountTendered, string paymentMethod)
+        public Form8(decimal change, decimal originalTotalPrice, decimal discountAmount, List<string> mergedOrderList, string orderOption, decimal finaltotalprice, decimal amountTendered, string paymentMethod)
         {
             InitializeComponent();
             _change = change;
             _originalTotalPrice = originalTotalPrice;
             _discountAmount = discountAmount;
-            _orderList = orderList;
+            _mergedOrderList = mergedOrderList;
             _orderOption = orderOption;
             _finalTotalPrice = finaltotalprice;
             _amountTendered = amountTendered;
@@ -93,7 +93,7 @@ namespace WinFormsApp1
 
         private void printReceiptButton_Click(object sender, EventArgs e)
         {
-            ReceiptForm receiptForm = new ReceiptForm(_originalTotalPrice, _finalTotalPrice, _change, _orderList, _discountAmount, _orderOption, _amountTendered, _paymentMethod);
+            ReceiptForm receiptForm = new ReceiptForm(_originalTotalPrice, _finalTotalPrice, _change, _mergedOrderList, _discountAmount, _orderOption, _amountTendered, _paymentMethod);
             this.Hide();
             receiptForm.ShowDialog();
             
